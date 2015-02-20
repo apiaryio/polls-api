@@ -1,6 +1,7 @@
 # Polls API
 
 [![Apiary Documentation](https://img.shields.io/badge/Apiary-Documented-blue.svg)](http://docs.pollsapi.apiary.io/)
+[![Circle CI Status](https://img.shields.io/circleci/project/apiaryio/polls-api.svg)](https://circleci.com/gh/apiaryio/polls-api/tree/master)
 
 This is a Python implementation of a Polls API, an API that allows consumers to
 view polls and vote in them. Take a look at the
