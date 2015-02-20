@@ -1,5 +1,7 @@
+gunicorn==19.2.1
 invoke==0.9.0
 peewee==2.4.7
+psycopg2==2.6
 rivr==0.5.1
 rivr-peewee==0.1.2
 wsgiref==0.1.2
