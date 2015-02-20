@@ -35,8 +35,17 @@ class Choice(database.Model):
     def __str__(self):
         return self.choice_text
 
+    def get_absolute_url(self):
+        return '/questions/{}/choices/{}'.format(self.question.id, self.id)
+
     def as_dictionary(self):
         return {
             'choice': self.choice_text,
+            'url': self.get_absolute_url(),
+            'votes': self.votes.count(),
         }
+
+
+class Vote(database.Model):
+    choice = peewee.ForeignKeyField(Choice, related_name='votes')
 

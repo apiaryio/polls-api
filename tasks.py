@@ -5,16 +5,18 @@ from invoke import run, task
 
 @task
 def dropdb():
-    from polls.models import Question, Choice
+    from polls.models import Question, Choice, Vote
+    Vote.drop_table(True)
     Choice.drop_table(True)
     Question.drop_table(True)
 
 
 @task
 def syncdb():
-    from polls.models import Question, Choice
+    from polls.models import Question, Choice, Vote
     Question.create_table(True)
     Choice.create_table(True)
+    Vote.create_table(True)
 
 
 class Database(object):

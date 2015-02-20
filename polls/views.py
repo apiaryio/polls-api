@@ -1,7 +1,7 @@
 from rivr.views import RESTView
 from rivr.http import Http404, RESTResponse
 
-from polls.models import Question, Choice
+from polls.models import Question, Choice, Vote
 from polls.settings import *
 
 
@@ -54,4 +54,24 @@ class QuestionDetailView(RESTView):
 
         choice = self.get_object()
         choice.delete_instance()
+
+class ChoiceDetailView(RESTView):
+    def get_object(self):
+        try:
+            choice = Choice.get(id=self.kwargs['pk'])
+        except Choice.DoesNotExist:
+            raise Http404
+
+        return choice
+
+    def post(self, request, *args, **kwargs):
+        if not CAN_VOTE_QUESTION:
+            return self.http_method_not_allowed(request)
+
+        choice = self.get_object()
+        Vote.create(choice=choice)
+
+        response = RESTResponse(request, None, status=201)
+        response.headers['Location'] = choice.question.get_absolute_url()
+        return response
 

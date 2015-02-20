@@ -32,6 +32,8 @@ class QuestionTests(unittest.TestCase):
             'choices': [
                 {
                     'choice': 'Swift',
+                    'url': '/questions/{}/choices/{}'.format(self.question.id, self.choice.id),
+                    'votes': 0,
                 }
             ],
         })
@@ -54,5 +56,7 @@ class ChoiceTests(unittest.TestCase):
     def testToDictionary(self):
         self.assertEqual(self.choice.as_dictionary(), {
             'choice': 'Swift',
+            'url': '/questions/{}/choices/{}'.format(self.question.id, self.choice.id),
+            'votes': 0,
         })
 
