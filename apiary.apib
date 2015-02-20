@@ -3,13 +3,13 @@ HOST: https://pollsapi.herokuapp.com/
 
 # Polls
 
-Polls is a simple web service that allows consumers to view polls and vote in them.
+Polls is a simple web service that allows consumers to view polls and vote in them. You can view this documentation over at [Apiary](http://docs.pollsapi.apiary.io).
 
 # Polls API Root [/]
 
 This resource does not have any attributes. Instead it offers the initial API affordances in the form of the links in the JSON body.
 
-It is recommend to follow the “url” link values or Link headers to get to resources instead of constructing your own URLs to keep your client decoupled from implementation details.
+It is recommend to follow the “url” link values, [Link](https://tools.ietf.org/html/rfc5988) or Location headers where applicable to retrieve resources. Instead of constructing your own URLs, to keep your client decoupled from implementation details
 
 ## Retrieve the Entry Point [GET]
 
@@ -25,12 +25,12 @@ Resource related to questions in the API.
 
 ## Question [/questions/{question_id}]
 
-A Question object has the following attributes.
+A Question object has the following attributes:
 
 - question
-- published_at
+- published_at - An ISO8601 date when the question was published.
 - url
-- choices (an array of Choice objects).
+- choices - An array of Choice objects.
 
 + Parameters
     + question_id (required, number, `1`) ... ID of the Question in form of an integer
@@ -81,8 +81,6 @@ This action allows you to vote on a question's choice.
             Location: /questions/1
 
 ## Questions collection [/questions{?page}]
-
-Again, instead of constructing the URLs for the next page. It is **highly** recommended that you follow the `next` link header in the response.
 
 + Parameters
     + page (optional, number, `1`) ... The page of questions to return
