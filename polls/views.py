@@ -29,7 +29,9 @@ class QuestionListView(RESTView):
         for choice_text in body['choices']:
             Choice.create(question=question, choice_text=choice_text)
 
-        return RESTResponse(request, question.as_dictionary(), status=201)
+        response = RESTResponse(request, question.as_dictionary(), status=201)
+        response.headers['Location'] = question.get_absolute_url()
+        return response
 
 
 class QuestionDetailView(RESTView):

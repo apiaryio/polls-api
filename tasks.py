@@ -1,4 +1,5 @@
 import os
+import thread
 import tempfile
 from invoke import run, task
 
@@ -50,4 +51,23 @@ def develop():
 def shell():
     with Database('development', False):
         run('python')
+
+@task
+def dredd():
+    with Database('dredd'):
+        # Setup example
+        from polls.models import Question, Choice, Vote
+        question = Question.create(question_text='Favourite programming language?')
+        swift = Choice.create(question=question, choice_text='Swift')
+        python = Choice.create(question=question, choice_text='Python')
+        objc = Choice.create(question=question, choice_text='Objective-C')
+        ruby = Choice.create(question=question, choice_text='Ruby')
+
+        # Run Server
+        from rivr import serve
+        from polls.app import app
+        thread.start_new_thread(serve, (app,))
+
+        # Run Dredd
+        run('dredd apiary.apib http://localhost:8080')
 
