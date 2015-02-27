@@ -58,8 +58,12 @@ class Resource(View):
         )
 
         negotiator = ContentNegotiator(acceptable[0], acceptable)
-        negotiated_type = negotiator.negotiate(accept=request.META['HTTP_ACCEPT'])
-        return negotiated_type.content_type
+        accept = request.META.get('HTTP_ACCEPT')
+        negotiated_type = negotiator.negotiate(accept=request.META.get('HTTP_ACCEPT'))
+        if negotiated_type:
+            return negotiated_type.content_type
+
+        return acceptable[0].content_type
 
 
 class CollectionResource(Resource):
