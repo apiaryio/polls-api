@@ -44,7 +44,7 @@ $ python manage.py test
 ### Running the development server
 
 ```bash
-$ python manage.py develop
+$ python manage.py runserver
 ```
 
 ## License
