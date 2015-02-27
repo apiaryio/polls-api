@@ -43,6 +43,7 @@ class Resource(View):
         return {
             'application/json': to_json,
             'application/hal+json': to_hal,
+            'application/vnd.siren+json': to_siren,
         }
 
     def get(self, request, *args, **kwargs):
@@ -55,6 +56,7 @@ class Resource(View):
         acceptable = (
             AcceptParameters(ContentType('application/json')),
             AcceptParameters(ContentType('application/hal+json')),
+            AcceptParameters(ContentType('application/vnd.siren+json')),
         )
 
         negotiator = ContentNegotiator(acceptable[0], acceptable)
@@ -140,6 +142,50 @@ def to_hal(resource):
     document['_links'] = links
     if len(embed):
         document['_embed'] = embed
+
+    return document
+
+
+def to_siren_relation(relation):
+    def inner(resource):
+        document = to_siren(resource)
+        document['rel'] = [relation]
+        return document
+    return inner
+
+def to_siren(resource):
+    def to_siren_link(relation):
+        def inner(resource):
+            return { 'rel': [relation], 'href': resource.get_uri() }
+        return inner
+
+    document = {}
+
+    attributes = resource.get_attributes()
+    if len(attributes):
+        document['properties'] = attributes
+
+    links = []
+    entities = []
+    for relation, related_resource in resource.get_relations().items():
+        if resource.can_embed(relation):
+            if isinstance(related_resource, list):
+                entities += map(to_siren_relation(relation), related_resource)
+            else:
+                entity = to_siren_relation(relation)(related_resource)
+                entities.append(entity)
+        else:
+            if isinstance(related_resource, list):
+                items = map(to_siren_link(relation), related_resource)
+                links += items
+            else:
+                links.append(to_siren_link(relation)(related_resource))
+
+    links.append(to_siren_link('self')(resource))
+    document['links'] = links
+
+    if len(entities):
+        document['entities'] = entities
 
     return document
 
