@@ -1,9 +1,9 @@
-import json
-from django.views.generic import View
+from django.http import HttpResponse
 
 from polls.models import Question, Choice, Vote
 
 from polls.resource import Resource, CollectionResource, SingleObjectMixin
+from polls.settings import CAN_CREATE_QUESTION, CAN_DELETE_QUESTION, CAN_VOTE_QUESTION
 
 
 class RootResource(Resource):
@@ -44,6 +44,13 @@ class QuestionResource(Resource, SingleObjectMixin):
             'choices': map(choice_resource, choices),
         }
 
+    def delete(self, request, *args, **kwargs):
+        if not CAN_DELETE_QUESTION:
+            return self.http_method_not_allowed(request)
+
+        self.get_object().delete()
+        return HttpResponse(status=204)
+
 
 class ChoiceResource(Resource, SingleObjectMixin):
     model = Choice
@@ -61,6 +68,9 @@ class ChoiceResource(Resource, SingleObjectMixin):
         }
 
     def post(self, request, *args, **kwargs):
+        if not CAN_VOTE_QUESTION:
+            return self.http_method_not_allowed(request)
+
         choice = self.get_object()
         Vote(choice=choice).save()
         response = self.get(request)
@@ -75,6 +85,9 @@ class QuestionCollectionResource(CollectionResource):
     uri = '/questions'
 
     def post(self, request):
+        if not CAN_CREATE_QUESTION:
+            return self.http_method_not_allowed(request)
+
         body = json.loads(request.body)
         question_text = body.get('question')
         choices = body.get('choices')
