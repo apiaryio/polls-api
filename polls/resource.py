@@ -1,9 +1,13 @@
 import json
+from collections import namedtuple
 
 from django.views.generic import View
 from django.http import HttpResponse
 
 from negotiator import ContentType, ContentNegotiator, AcceptParameters
+
+
+Action = namedtuple('Action', ('method', 'attributes'))
 
 
 class SingleObjectMixin(object):
@@ -35,6 +39,12 @@ class Resource(View):
         the response when applicable.
         """
         return True
+
+    def get_actions(self):
+        """
+        Returns a dictionary of actions
+        """
+        return {}
 
     def get_uri(self):
         return self.uri
@@ -186,6 +196,25 @@ def to_siren(resource):
 
     if len(entities):
         document['entities'] = entities
+
+    actions = []
+
+    for name, action in resource.get_actions().items():
+        action_dict = {
+            'name': name,
+            'method': action.method,
+            'href': resource.get_uri(),
+        }
+
+        if action.attributes:
+            def to_field(attribute):
+                return { 'name': attribute }
+            action_dict['fields'] = map(to_field, action.attributes)
+
+        actions.append(action_dict)
+
+    if len(actions):
+        document['actions'] = actions
 
     return document
 

@@ -2,7 +2,7 @@ from django.http import HttpResponse
 
 from polls.models import Question, Choice, Vote
 
-from polls.resource import Resource, CollectionResource, SingleObjectMixin
+from polls.resource import Action, Resource, CollectionResource, SingleObjectMixin
 from polls.settings import CAN_CREATE_QUESTION, CAN_DELETE_QUESTION, CAN_VOTE_QUESTION
 
 
@@ -44,6 +44,14 @@ class QuestionResource(Resource, SingleObjectMixin):
             'choices': map(choice_resource, choices),
         }
 
+    def get_actions(self):
+        actions = {}
+
+        if CAN_DELETE_QUESTION:
+            actions['delete'] = Action(method='DELETE', attributes=None)
+
+        return actions
+
     def delete(self, request, *args, **kwargs):
         if not CAN_DELETE_QUESTION:
             return self.http_method_not_allowed(request)
@@ -67,6 +75,14 @@ class ChoiceResource(Resource, SingleObjectMixin):
             'votes': choice.votes,
         }
 
+    def get_actions(self):
+        actions = {}
+
+        if CAN_VOTE_QUESTION:
+            actions['vote'] = Action(method='POST', attributes=None)
+
+        return actions
+
     def post(self, request, *args, **kwargs):
         if not CAN_VOTE_QUESTION:
             return self.http_method_not_allowed(request)
@@ -83,6 +99,14 @@ class QuestionCollectionResource(CollectionResource):
     model = Question
     relation = 'questions'
     uri = '/questions'
+
+    def get_actions(self):
+        actions = {}
+
+        if CAN_CREATE_QUESTION:
+            actions['create'] = Action(method='POST', attributes=('question', 'choices'))
+
+        return actions
 
     def post(self, request):
         if not CAN_CREATE_QUESTION:
