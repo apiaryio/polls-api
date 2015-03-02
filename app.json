@@ -12,7 +12,7 @@
         "heroku-postgresql:hobby-dev"
     ],
     "scripts": {
-        "postdeploy": "python manage.py syncdb"
+        "postdeploy": "python manage.py migrate"
     },
     "env": {
         "POLLS_CAN_CREATE_QUESTION": "true",
