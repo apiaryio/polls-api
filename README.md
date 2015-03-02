@@ -6,7 +6,7 @@
 This is a Python implementation of a Polls API, an API that allows consumers to
 view polls and vote in them. Take a look at the
 [API Documentation](http://docs.pollsapi.apiary.io/). We've
-deployed an instance of this [API](https://pollsapi.herokuapp.com) for testing.
+deployed an instance of this [API](https://polls.apiblueprint.org/) for testing.
 
 ## Deploying on Heroku
 
