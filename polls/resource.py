@@ -14,10 +14,10 @@ class SingleObjectMixin(object):
     model = None
 
     def get_object(self):
-        if hasattr(self, 'obj'):
-            return self.obj
+        if not getattr(self, 'obj', None):
+            self.obj = self.model.objects.get(pk=self.kwargs['pk'])
 
-        return self.model.objects.get(pk=self.kwargs['pk'])
+        return self.obj
 
 
 class Resource(View):
@@ -80,16 +80,16 @@ class Resource(View):
 
 class CollectionResource(Resource):
     model = None
-    resource = None
+    resource = None  # A resource class that inherits from SingleObjectMixin
     relation = 'objects'
 
     def get_objects(self):
         return self.model.objects.all()
 
     def get_resources(self):
-        def to_resource(model):
+        def to_resource(obj):
             resource = self.resource()
-            resource.obj = model
+            resource.obj = obj
             return resource
 
         return map(to_resource, self.get_objects())

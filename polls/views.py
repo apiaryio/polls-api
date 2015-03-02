@@ -1,7 +1,8 @@
+import json
+
 from django.http import HttpResponse
 
 from polls.models import Question, Choice, Vote
-
 from polls.resource import Action, Resource, CollectionResource, SingleObjectMixin
 from polls.settings import CAN_CREATE_QUESTION, CAN_DELETE_QUESTION, CAN_VOTE_QUESTION
 
