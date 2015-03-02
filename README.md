@@ -33,6 +33,7 @@ You can configure a development environment with the following:
 $ virtualenv venv
 $ source venv/bin/activate
 $ pip install -r requirements.txt
+$ python manage.py migrate
 ```
 
 ### Running the tests
