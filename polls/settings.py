@@ -8,14 +8,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import dj_database_url
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
 def get_env(key, default=True):
     value = os.environ.get(key, default)
-    return (value == True or value.lower() == 'true' or value == '1' or
+    return (value is True or value.lower() == 'true' or value == '1' or
             value.lower() == 'yes')
 
 
@@ -61,8 +63,7 @@ WSGI_APPLICATION = 'polls.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-import dj_database_url
-DATABASES = { 'default': dj_database_url.config() }
+DATABASES = {'default': dj_database_url.config()}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/

@@ -94,6 +94,7 @@ class ChoiceResource(Resource, SingleObjectMixin):
         response['Location'] = self.get_uri()
         return response
 
+
 class QuestionCollectionResource(CollectionResource):
     resource = QuestionResource
     model = Question
@@ -130,4 +131,3 @@ class QuestionCollectionResource(CollectionResource):
         response.status_code = 201
         response['Location'] = resource.get_uri()
         return response
-

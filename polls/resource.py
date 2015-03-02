@@ -117,7 +117,7 @@ def to_json(resource):
             if resource.can_embed(relation):
                 document[relation] = map(to_json, related_resource)
             else:
-                document[relation] = map(lambda r: { 'url': r.get_uri() },
+                document[relation] = map(lambda r: {'url': r.get_uri()},
                                          related_resource)
         else:
             if resource.can_embed(relation):
@@ -145,7 +145,7 @@ def to_hal(resource):
                 embed[relation] = to_hal(related_resource)
         else:
             href = related_resource.get_uri()
-            links[relation] = { 'href': href }
+            links[relation] = {'href': href}
 
     links['self'] = resource.get_uri()
 
@@ -163,10 +163,11 @@ def to_siren_relation(relation):
         return document
     return inner
 
+
 def to_siren(resource):
     def to_siren_link(relation):
         def inner(resource):
-            return { 'rel': [relation], 'href': resource.get_uri() }
+            return {'rel': [relation], 'href': resource.get_uri()}
         return inner
 
     document = {}
@@ -208,7 +209,7 @@ def to_siren(resource):
 
         if action.attributes:
             def to_field(attribute):
-                return { 'name': attribute }
+                return {'name': attribute}
             action_dict['fields'] = map(to_field, action.attributes)
 
         actions.append(action_dict)
@@ -217,4 +218,3 @@ def to_siren(resource):
         document['actions'] = actions
 
     return document
-
