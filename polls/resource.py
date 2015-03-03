@@ -147,7 +147,7 @@ def to_hal(resource):
             href = related_resource.get_uri()
             links[relation] = {'href': href}
 
-    links['self'] = resource.get_uri()
+    links['self'] = {'href': resource.get_uri()}
 
     document['_links'] = links
     if len(embed):
