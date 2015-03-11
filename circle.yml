@@ -1,0 +1,7 @@
+dependencies:
+  post:
+    - npm install -g dredd
+
+test:
+  post:
+    - ./scripts/dredd

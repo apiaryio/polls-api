@@ -74,11 +74,14 @@ A Question object has the following attributes.
 
 This action allows you to vote on a question's choice.
 
-+ Response 201
++ Response 201 (application/json)
 
-    + Headers
+        {
+            "url": "/questions/1/choices/1",
+            "votes": 1,
+            "choice": "Swift"
+        }
 
-            Location: /questions/1
 
 ## Questions collection [/questions{?page}]
 
