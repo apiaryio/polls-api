@@ -92,7 +92,6 @@ class ChoiceResource(Resource, SingleObjectMixin):
         Vote(choice=choice).save()
         response = self.get(request)
         response.status_code = 201
-        response['Location'] = self.get_uri()
         return response
 
 
