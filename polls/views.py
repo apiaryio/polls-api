@@ -4,7 +4,7 @@ from django.http import HttpResponse
 
 from polls.models import Question, Choice, Vote
 from polls.resource import Action, Resource, CollectionResource, SingleObjectMixin
-from polls.settings import CAN_CREATE_QUESTION, CAN_DELETE_QUESTION, CAN_VOTE_QUESTION
+from polls.config import *
 
 
 class RootResource(Resource):
@@ -21,7 +21,7 @@ class RootResource(Resource):
 
 class QuestionResource(Resource, SingleObjectMixin):
     model = Question
-    uri = '/questions/{pk}'
+    uri = QUESTION_URL
 
     def get_uri(self):
         return self.uri.format(pk=self.get_object().pk)
@@ -64,7 +64,7 @@ class QuestionResource(Resource, SingleObjectMixin):
 
 class ChoiceResource(Resource, SingleObjectMixin):
     model = Choice
-    uri = '/questions/{question_pk}/choices/{pk}'
+    uri = CHOICE_URL
 
     def get_uri(self):
         choice = self.get_object()
@@ -101,7 +101,7 @@ class QuestionCollectionResource(CollectionResource):
     resource = QuestionResource
     model = Question
     relation = 'questions'
-    uri = '/questions'
+    uri = QUESTIONS_URL
 
     def get_actions(self):
         actions = {}
