@@ -21,9 +21,10 @@ class RootResource(Resource):
 
 class QuestionResource(Resource, SingleObjectMixin):
     model = Question
+    uri = '/questions/{pk}'
 
     def get_uri(self):
-        return '/questions/{}'.format(self.get_object().pk)
+        return self.uri.format(pk=self.get_object().pk)
 
     def get_attributes(self):
         question = self.get_object()
@@ -63,10 +64,11 @@ class QuestionResource(Resource, SingleObjectMixin):
 
 class ChoiceResource(Resource, SingleObjectMixin):
     model = Choice
+    uri = '/questions/{question_pk}/choices/{pk}'
 
     def get_uri(self):
         choice = self.get_object()
-        return '/questions/{}/choices/{}'.format(choice.question.pk, choice.pk)
+        return self.uri.format(question_pk=choice.question.pk, pk=choice.pk)
 
     def get_attributes(self):
         choice = self.get_object()
