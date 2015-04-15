@@ -3,5 +3,5 @@ dependencies:
     - npm install -g dredd
 
 test:
-  post:
+  override:
     - ./scripts/dredd
