@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ -z "$PORT" ]; then
+  PORT=8000
+fi
+
 # Configure datbase
 export DATABASE=$(pwd)/dredd.sqlite
 rm $DATABASE
@@ -9,15 +13,15 @@ export DATABASE_URL=sqlite:///$DATABASE
 python manage.py migrate
 
 # Run the dev server
-python manage.py runserver --noreload &
+python manage.py runserver $PORT --noreload &
 sleep 1
 PID=$!
 
 # Seed database with initial poll
-curl --data '{"question": "Favourite programming language?", "choices": ["Swift", "Python"]}' http://localhost:8000/questions
+curl --data '{"question": "Favourite programming language?", "choices": ["Swift", "Python"]}' http://localhost:$PORT/questions
 
 # Run dredd
-dredd apiary.apib http://localhost:8000 --hookfiles=dredd-hooks.js
+dredd apiary.apib http://localhost:$PORT --hookfiles=dredd-hooks.js
 RESULT=$?
 
 kill -9 $PID
