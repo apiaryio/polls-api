@@ -1,5 +1,6 @@
 import json
 
+from django.db.models import Count
 from django.http import HttpResponse
 
 from polls.models import Question, Choice, Vote
@@ -34,16 +35,16 @@ class QuestionResource(Resource, SingleObjectMixin):
         }
 
     def get_relations(self):
-        choices = self.get_object().choice_set.all()
+        choices = self.get_object().choices.annotate(vote_count=Count('votes')).order_by('-vote_count', 'choice_text')
 
         def choice_resource(choice):
             resource = ChoiceResource()
             resource.obj = choice
-            resource.request = self.request
+            resource.request = getattr(self, 'request', None)
             return resource
 
         return {
-            'choices': map(choice_resource, choices),
+            'choices': map(choice_resource, list(choices)),
         }
 
     def get_actions(self):
@@ -72,9 +73,12 @@ class ChoiceResource(Resource, SingleObjectMixin):
     def get_attributes(self):
         choice = self.get_object()
 
+        if not hasattr(choice, 'vote_count'):
+            choice.vote_count = choice.votes.count()
+
         return {
             'choice': choice.choice_text,
-            'votes': choice.votes,
+            'votes': choice.vote_count,
         }
 
     def get_actions(self):
@@ -89,8 +93,7 @@ class ChoiceResource(Resource, SingleObjectMixin):
         if not can_vote_choice(self.request):
             return self.http_method_not_allowed(request)
 
-        choice = self.get_object()
-        Vote(choice=choice).save()
+        self.get_object().vote()
         response = self.get(request)
         response.status_code = 201
         return response
@@ -147,7 +150,7 @@ class QuestionCollectionResource(CollectionResource):
             question = None
 
         if question:
-            choices = map(lambda c: c.choice_text, question.choice_set.order_by('choice_text'))
+            choices = map(lambda c: c.choice_text, question.choices.order_by('choice_text'))
             if choices == sorted(choice_texts):
                 return (question, False)
 
