@@ -4,7 +4,7 @@ from django.http import HttpResponse
 
 from polls.models import Question, Choice, Vote
 from polls.resource import Action, Resource, CollectionResource, SingleObjectMixin
-from polls.settings import CAN_CREATE_QUESTION, CAN_DELETE_QUESTION, CAN_VOTE_QUESTION
+from polls.features import can_create_question, can_delete_question, can_vote_choice
 
 
 class RootResource(Resource):
@@ -39,6 +39,7 @@ class QuestionResource(Resource, SingleObjectMixin):
         def choice_resource(choice):
             resource = ChoiceResource()
             resource.obj = choice
+            resource.request = self.request
             return resource
 
         return {
@@ -48,13 +49,13 @@ class QuestionResource(Resource, SingleObjectMixin):
     def get_actions(self):
         actions = {}
 
-        if CAN_DELETE_QUESTION:
+        if can_delete_question(self.request):
             actions['delete'] = Action(method='DELETE', attributes=None)
 
         return actions
 
     def delete(self, request, *args, **kwargs):
-        if not CAN_DELETE_QUESTION:
+        if not can_delete_question(request):
             return self.http_method_not_allowed(request)
 
         self.get_object().delete()
@@ -79,13 +80,13 @@ class ChoiceResource(Resource, SingleObjectMixin):
     def get_actions(self):
         actions = {}
 
-        if CAN_VOTE_QUESTION:
+        if can_vote_choice(self.request):
             actions['vote'] = Action(method='POST', attributes=None)
 
         return actions
 
     def post(self, request, *args, **kwargs):
-        if not CAN_VOTE_QUESTION:
+        if not can_vote_choice(self.request):
             return self.http_method_not_allowed(request)
 
         choice = self.get_object()
@@ -104,13 +105,13 @@ class QuestionCollectionResource(CollectionResource):
     def get_actions(self):
         actions = {}
 
-        if CAN_CREATE_QUESTION:
+        if can_create_question(self.request):
             actions['create'] = Action(method='POST', attributes=('question', 'choices'))
 
         return actions
 
     def post(self, request):
-        if not CAN_CREATE_QUESTION:
+        if not can_create_question(self.request):
             return self.http_method_not_allowed(request)
 
         body = json.loads(request.body)
@@ -123,6 +124,7 @@ class QuestionCollectionResource(CollectionResource):
         question, created = self.get_or_create(question_text, choices)
         resource = self.resource()
         resource.obj = question
+        resource.request = request
         response = resource.get(request)
         if created:
             response.status_code = 201
