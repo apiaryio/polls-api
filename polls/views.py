@@ -120,14 +120,33 @@ class QuestionCollectionResource(CollectionResource):
         if not question_text or not isinstance(choices, list):
             return HttpResponse(status=400)
 
-        question = Question(question_text=question_text)
-        question.save()
-        for choice_text in choices:
-            Choice(question=question, choice_text=choice_text).save()
-
+        question, created = self.get_or_create(question_text, choices)
         resource = self.resource()
         resource.obj = question
         response = resource.get(request)
-        response.status_code = 201
+        if created:
+            response.status_code = 201
         response['Location'] = resource.get_uri()
         return response
+
+    def create_question(self, question_text, choice_texts):
+        question = Question(question_text=question_text)
+        question.save()
+
+        for choice_text in choice_texts:
+            Choice(question=question, choice_text=choice_text).save()
+
+        return question
+
+    def get_or_create(self, question_text, choice_texts):
+        try:
+            question = Question.objects.get(question_text=question_text)
+        except Question.DoesNotExist:
+            question = None
+
+        if question:
+            choices = map(lambda c: c.choice_text, question.choice_set.order_by('choice_text'))
+            if choices == choice_texts:
+                return (question, False)
+
+        return (self.create_question(question_text, choice_texts), True)
