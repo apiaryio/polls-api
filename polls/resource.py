@@ -90,6 +90,7 @@ class CollectionResource(Resource):
         def to_resource(obj):
             resource = self.resource()
             resource.obj = obj
+            resource.request = self.request
             return resource
 
         return map(to_resource, self.get_objects())
