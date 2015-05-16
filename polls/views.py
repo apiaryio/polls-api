@@ -140,13 +140,13 @@ class QuestionCollectionResource(CollectionResource):
 
     def get_or_create(self, question_text, choice_texts):
         try:
-            question = Question.objects.get(question_text=question_text)
+            question = Question.objects.filter(question_text=question_text).first()
         except Question.DoesNotExist:
             question = None
 
         if question:
             choices = map(lambda c: c.choice_text, question.choice_set.order_by('choice_text'))
-            if choices == choice_texts:
+            if choices == sorted(choice_texts):
                 return (question, False)
 
         return (self.create_question(question_text, choice_texts), True)
