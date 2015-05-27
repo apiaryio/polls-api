@@ -5,6 +5,9 @@ class Question(models.Model):
     question_text = models.CharField(max_length=140)
     published_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        get_latest_by = 'published_at'
+
     def __str__(self):
         return self.question_text
 
