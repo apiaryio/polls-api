@@ -13,16 +13,17 @@ class Question(models.Model):
 
 
 class Choice(models.Model):
-    question = models.ForeignKey(Question)
+    question = models.ForeignKey(Question, related_name='choices')
     choice_text = models.CharField(max_length=140)
 
     def __str__(self):
         return self.choice_text
 
-    @property
-    def votes(self):
-        return self.vote_set.count()
-
+    def vote(self):
+        """
+        Create a vote on this choice.
+        """
+        return Vote.objects.create(choice=self)
 
 class Vote(models.Model):
-    choice = models.ForeignKey(Choice)
+    choice = models.ForeignKey(Choice, related_name='votes')

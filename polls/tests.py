@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 
-from polls.models import Question
+from polls.views import QuestionResource
+from polls.models import Question, Choice, Vote
 
 
 class CreateQuestionTestCase(TestCase):
@@ -15,7 +16,7 @@ class CreateQuestionTestCase(TestCase):
         question = Question.objects.latest()
         self.assertEqual(question.question_text, 'Test Question?')
 
-        choice_a, choice_b, choice_c = question.choice_set.order_by('choice_text')
+        choice_a, choice_b, choice_c = question.choices.order_by('choice_text')
         self.assertEqual(choice_a.choice_text, 'A')
         self.assertEqual(choice_b.choice_text, 'B')
         self.assertEqual(choice_c.choice_text, 'C')
@@ -48,3 +49,19 @@ class CreateQuestionTestCase(TestCase):
         self.assertEqual(response2.status_code, 201)
         self.assertEqual(len(Question.objects.all()), original_question_count + 2)
 
+
+class QuestionDetailTestCase(TestCase):
+    def test_choices_ordered_by_votes_then_alphabetical(self):
+        question = Question.objects.create(question_text='Are choices ordered correctly?')
+        yes_choice = Choice.objects.create(question=question, choice_text='Yes')
+        no_choice = Choice.objects.create(question=question, choice_text='No')
+        resource = QuestionResource()
+        resource.obj = question
+
+        def get_choices():
+            return map(lambda r: r.obj, resource.get_relations()['choices'])
+
+        self.assertEqual(get_choices(), [no_choice, yes_choice])
+
+        yes_choice.vote()
+        self.assertEqual(get_choices(), [yes_choice, no_choice])
