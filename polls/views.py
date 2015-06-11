@@ -4,7 +4,7 @@ from django.db.models import Count
 from django.http import HttpResponse
 
 from polls.models import Question, Choice, Vote
-from polls.resource import Action, Resource, CollectionResource, SingleObjectMixin
+from polls.resource import Action, Attribute, Resource, CollectionResource, SingleObjectMixin
 from polls.features import can_create_question, can_delete_question, can_vote_choice
 
 
@@ -109,7 +109,10 @@ class QuestionCollectionResource(CollectionResource):
         actions = {}
 
         if can_create_question(self.request):
-            actions['create'] = Action(method='POST', attributes=('question', 'choices'))
+            actions['create'] = Action(method='POST', attributes=(
+                Attribute(name='question', category='text'),
+                Attribute(name='choices', category='array[text]'),
+            ))
 
         return actions
 
