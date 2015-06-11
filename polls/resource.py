@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from negotiator import ContentType, ContentNegotiator, AcceptParameters
 
 
+Attribute = namedtuple('Attribute', ('name', 'category'))
 Action = namedtuple('Action', ('method', 'attributes'))
 
 
@@ -210,7 +211,11 @@ def to_siren(resource):
 
         if action.attributes:
             def to_field(attribute):
-                return {'name': attribute}
+                return {
+                    'name': attribute.name,
+                    'type': attribute.category,
+                    'title': attribute.name.capitalize(),
+                }
             action_dict['fields'] = map(to_field, action.attributes)
 
         actions.append(action_dict)
