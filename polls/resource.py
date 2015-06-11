@@ -206,6 +206,7 @@ def to_siren(resource):
             'name': name,
             'method': action.method,
             'href': resource.get_uri(),
+            'type': 'application/json',
         }
 
         if action.attributes:
