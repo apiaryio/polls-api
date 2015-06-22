@@ -7,6 +7,7 @@ class Question(models.Model):
 
     class Meta:
         get_latest_by = 'published_at'
+        ordering = ('-published_at',)
 
     def __str__(self):
         return self.question_text
