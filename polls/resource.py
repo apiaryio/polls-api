@@ -3,6 +3,7 @@ from collections import namedtuple
 
 from django.views.generic import View
 from django.http import HttpResponse
+from django.core.paginator import Paginator
 
 from negotiator import ContentType, ContentNegotiator, AcceptParameters
 
@@ -61,7 +62,17 @@ class Resource(View):
         content_type = self.determine_content_type(request)
         handlers = self.content_handlers()
         handler = handlers[str(content_type)]
-        return HttpResponse(json.dumps(handler(self)), content_type)
+        response = HttpResponse(json.dumps(handler(self)), content_type)
+
+        if str(content_type) == 'application/json':
+            can_embed_relation = lambda relation: not self.can_embed(relation[0])
+            relations = filter(can_embed_relation, self.get_relations().items())
+            relation_to_link = lambda relation: '<{}>; rel="{}"'.format(relation[1].get_uri(), relation[0])
+            links = map(relation_to_link, relations)
+            if len(links) > 0:
+                response['Link'] = ', '.join(links)
+
+        return response
 
     def determine_content_type(self, request):
         acceptable = (
@@ -83,31 +94,64 @@ class CollectionResource(Resource):
     model = None
     resource = None  # A resource class that inherits from SingleObjectMixin
     relation = 'objects'
+    paginate_by = 3
+
+    def __init__(self, page=None):
+        self.page = page
+        super(CollectionResource, self).__init__()
+
+    def get_uri(self):
+        if self.page is not None:
+            return '{}?page={}'.format(self.uri, self.page)
+        return self.uri
 
     def get_objects(self):
         return self.model.objects.all()
 
-    def get_resources(self):
+    def get_paginator(self):
+        return Paginator(self.get_objects(), self.paginate_by)
+
+    def get_resources(self, objects):
         def to_resource(obj):
             resource = self.resource()
             resource.obj = obj
             resource.request = self.request
             return resource
 
-        return map(to_resource, self.get_objects())
+        return map(to_resource, objects)
 
     def get_relations(self):
-        return {
-            self.relation: self.get_resources()
+        paginator = self.get_paginator()
+        page = paginator.page(int(self.request.GET.get('page', 1)))
+        objects = page.object_list
+        relations = {
+            self.relation: self.get_resources(page)
         }
+
+        if page.has_next():
+            relations['next'] = self.__class__(page.next_page_number())
+
+        if page.has_previous():
+            relations['prev'] = self.__class__(page.previous_page_number())
+
+        if page.has_other_pages():
+            relations['last'] = self.__class__(paginator.num_pages)
+
+        return relations
 
     def content_handlers(self):
         """
         Override `content_handlers` to change JSON handler to return arrays
         """
+
+        def json_handler(resource):
+            relations = self.get_relations()
         handlers = super(CollectionResource, self).content_handlers()
-        handlers['application/json'] = lambda resource: map(to_json, resource.get_resources())
+        handlers['application/json'] = lambda resource: map(to_json, self.get_relations()[self.relation])
         return handlers
+
+    def can_embed(self, relation):
+        return relation not in ('next', 'prev', 'last')
 
 
 def to_json(resource):
