@@ -94,7 +94,7 @@ class CollectionResource(Resource):
     model = None
     resource = None  # A resource class that inherits from SingleObjectMixin
     relation = 'objects'
-    paginate_by = 3
+    paginate_by = 20
 
     def __init__(self, page=None):
         self.page = page
