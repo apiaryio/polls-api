@@ -128,6 +128,8 @@ class CollectionResource(Resource):
             self.relation: self.get_resources(page)
         }
 
+        relations['first'] = self.__class__()
+
         if page.has_next():
             relations['next'] = self.__class__(page.next_page_number())
 
@@ -151,7 +153,7 @@ class CollectionResource(Resource):
         return handlers
 
     def can_embed(self, relation):
-        return relation not in ('next', 'prev', 'last')
+        return relation not in ('next', 'prev', 'first', 'last')
 
 
 def to_json(resource):
