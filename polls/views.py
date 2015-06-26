@@ -50,13 +50,13 @@ class QuestionResource(Resource, SingleObjectMixin):
     def get_actions(self):
         actions = {}
 
-        if can_delete_question(self.request):
+        if can_delete_question(self.get_object(), self.request):
             actions['delete'] = Action(method='DELETE', attributes=None)
 
         return actions
 
     def delete(self, request, *args, **kwargs):
-        if not can_delete_question(request):
+        if not can_delete_question(self.get_object(), request):
             return self.http_method_not_allowed(request)
 
         self.get_object().delete()
