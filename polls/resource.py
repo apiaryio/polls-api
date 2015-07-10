@@ -65,12 +65,18 @@ class Resource(View):
         response = HttpResponse(json.dumps(handler(self)), content_type)
 
         if str(content_type) == 'application/json':
+            # Add a Link header
             can_embed_relation = lambda relation: not self.can_embed(relation[0])
             relations = filter(can_embed_relation, self.get_relations().items())
             relation_to_link = lambda relation: '<{}>; rel="{}"'.format(relation[1].get_uri(), relation[0])
             links = map(relation_to_link, relations)
             if len(links) > 0:
                 response['Link'] = ', '.join(links)
+
+        if str(content_type) != 'application/vnd.siren+json':
+            # Add an Allow header
+            methods = ['HEAD', 'GET'] + map(lambda a: a.method, self.get_actions().values())
+            response['allow'] = ', '.join(methods)
 
         return response
 

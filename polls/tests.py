@@ -1,7 +1,22 @@
 from django.test import TestCase, Client
+from django.http import HttpRequest
 
+from polls.resource import Action, Resource
 from polls.views import QuestionResource
 from polls.models import Question, Choice, Vote
+
+
+class ResourceTestCase(TestCase):
+    def test_json_includes_allow_header(self):
+        class TestAllowActionResource(Resource):
+            def get_actions(self):
+                return { 'delete': Action(method='DELETE', attributes=None) }
+
+        request = HttpRequest()
+        request.META['HTTP_ACCEPT'] = 'application/json'
+        response = TestAllowActionResource().get(request)
+
+        self.assertEqual(response['Allow'], 'HEAD, GET, DELETE')
 
 
 class CreateQuestionTestCase(TestCase):
