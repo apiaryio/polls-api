@@ -13,9 +13,6 @@ python manage.py runserver --noreload &
 sleep 1
 PID=$!
 
-# Seed database with initial poll
-curl --data '{"question": "Favourite programming language?", "choices": ["Swift", "Python"]}' http://localhost:8000/questions
-
 # Run dredd
 dredd apiary.apib http://localhost:8000 --hookfiles=dredd-hooks.js
 RESULT=$?
