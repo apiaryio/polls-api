@@ -14,7 +14,7 @@ sleep 1
 PID=$!
 
 # Run dredd
-dredd apiary.apib http://localhost:8000 --hookfiles=dredd-hooks.js
+dredd apiary.apib http://localhost:8000
 RESULT=$?
 
 kill -9 $PID
