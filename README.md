@@ -29,6 +29,8 @@ $ heroku config:set POLLS_CAN_DELETE_QUESTION=false
 
 You can configure a development environment with the following:
 
+**NOTE**: *These steps assume you have Python along with [pip](https://pip.pypa.io/en/latest/installing.html) and [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html) installed.*
+
 ```bash
 $ virtualenv venv
 $ source venv/bin/activate
