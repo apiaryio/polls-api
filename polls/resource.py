@@ -55,6 +55,7 @@ class Resource(View):
         return {
             'application/json': to_json,
             'application/hal+json': to_hal,
+            'application/vnd.hal+json': to_hal,
             'application/vnd.siren+json': to_siren,
         }
 
@@ -84,6 +85,7 @@ class Resource(View):
         acceptable = (
             AcceptParameters(ContentType('application/json')),
             AcceptParameters(ContentType('application/hal+json')),
+            AcceptParameters(ContentType('application/vnd.hal+json')),
             AcceptParameters(ContentType('application/vnd.siren+json')),
         )
 
