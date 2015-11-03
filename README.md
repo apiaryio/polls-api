@@ -8,6 +8,31 @@ view polls and vote in them. Take a look at the
 [API Documentation](http://docs.pollsapi.apiary.io/). We've
 deployed an instance of this [API](https://polls.apiblueprint.org/) for testing.
 
+## Deploying on Heroku using Docker
+
+**Requirements**:
+
+- [docker-machine](https://docs.docker.com/machine/)
+- [docker-compose](https://docs.docker.com/compose/)
+
+### Heroku Docker plugin
+
+`heroku plugins:install heroku-docker`
+
+### Running the development server in Docker
+
+`docker-compose up web`
+
+`open "http://$(docker-machine ip default):8080"`
+
+### Running tests in Docker
+
+`docker-compose run shell python manage.py test`
+
+### Release new version to Heroku
+
+`heroku docker:release`
+
 ## Deploying on Heroku
 
 Click the button below to automatically set up the Polls API in an app

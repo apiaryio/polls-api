@@ -1,23 +1,23 @@
 {
-    "name": "Polls API",
-    "description": "Polls is a simple web service that allows consumers to view polls and vote in them.",
-    "repository": "https://github.com/apiaryio/polls-api",
-    "website": "https://github.com/apiaryio/polls-api",
-    "keywords": [
-        "api",
-        "python",
-        "django"
-    ],
-    "addons": [
-        "heroku-postgresql:hobby-dev"
-    ],
-    "scripts": {
-        "postdeploy": "python manage.py migrate"
-    },
-    "env": {
-        "POLLS_CAN_CREATE_QUESTION": "true",
-        "POLLS_CAN_DELETE_QUESTION": "true",
-        "POLLS_CAN_VOTE_QUESTION": "true"
-    }
+  "name": "Polls API",
+  "description": "Polls is a simple web service that allows consumers to view polls and vote in them.",
+  "repository": "https://github.com/apiaryio/polls-api",
+  "website": "https://github.com/apiaryio/polls-api",
+  "keywords": [
+    "api",
+    "python",
+    "django"
+  ],
+  "addons": [
+    "heroku-postgresql:hobby-dev"
+  ],
+  "scripts": {
+    "postdeploy": "python manage.py migrate"
+  },
+  "env": {
+    "POLLS_CAN_CREATE_QUESTION": "true",
+    "POLLS_CAN_DELETE_QUESTION": "true",
+    "POLLS_CAN_VOTE_QUESTION": "true"
+  },
+  "image": "heroku/python"
 }
-
