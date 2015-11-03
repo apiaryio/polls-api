@@ -1,22 +1,22 @@
-#!/bin/sh
-
-# Configure datbase
-export DATABASE=$(pwd)/dredd.sqlite
-rm $DATABASE
-export DATABASE_URL=sqlite:///$DATABASE
-
+#!/bin/bash
+# set -x
+which docker-compose > /dev/null 1>&1
+if [ $? -eq 0 ]; then
+  DOCKER_COMPOSE='docker-compose'
+else
+  if [ -f ~/bin/docker-compose/docker-compose ]; then
+    DOCKER_COMPOSE="$HOME/bin/docker-compose/docker-compose"
+  else
+    echo "Cannot find docker-compose!"
+    exit 1
+  fi
+fi
 # Sync the database
-python manage.py migrate
-
+$DOCKER_COMPOSE run -e DATABASE_URL=sqlite:///dredd.sqlite shell "python manage.py migrate"
 # Run the dev server
-python manage.py runserver --noreload &
-sleep 1
-PID=$!
-
+$DOCKER_COMPOSE up -d web
+IPWEB=`docker ps  | grep pollsapi_web | cut -d ' ' -f1 | xargs docker inspect  | grep IPAddress\": | cut -d ":" -f2 | tr -d "\"" | tr -d "," | tr -d '[[:space:]]'`
 # Run dredd
-dredd apiary.apib http://localhost:8000
+docker run -v $(pwd):/root -w /root apiaryio/dredd dredd apiary.apib http://$IPWEB:8080
 RESULT=$?
-
-kill -9 $PID
 exit $RESULT
-
