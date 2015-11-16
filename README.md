@@ -23,6 +23,7 @@ $ heroku clone -a new-app-name
 $ heroku config:set POLLS_CAN_VOTE_QUESTION=false
 $ heroku config:set POLLS_CAN_CREATE_QUESTION=false
 $ heroku config:set POLLS_CAN_DELETE_QUESTION=false
+$ heroku config:set POLLS_CAN_REPORT_QUESTION=false
 ```
 
 ## Development Environment

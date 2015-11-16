@@ -1,4 +1,5 @@
 from django.db import models
+from polls.settings import REPORT_THRESHOLD
 
 
 class Question(models.Model):
@@ -11,6 +12,16 @@ class Question(models.Model):
 
     def __str__(self):
         return self.question_text
+
+    @property
+    def is_reported(self):
+        return self.reports.count() >= REPORT_THRESHOLD
+
+    def report(self):
+        """
+        Creates a report on this question.
+        """
+        return Report.objects.create(question=self)
 
 
 class Choice(models.Model):
@@ -26,5 +37,10 @@ class Choice(models.Model):
         """
         return Vote.objects.create(choice=self)
 
+
 class Vote(models.Model):
     choice = models.ForeignKey(Choice, related_name='votes')
+
+
+class Report(models.Model):
+    question = models.ForeignKey(Question, related_name='reports')

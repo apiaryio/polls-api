@@ -2,22 +2,28 @@ import json
 from collections import namedtuple
 
 from django.views.generic import View
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.core.paginator import Paginator
 
 from negotiator import ContentType, ContentNegotiator, AcceptParameters
 
 
 Attribute = namedtuple('Attribute', ('name', 'category'))
-Action = namedtuple('Action', ('method', 'attributes'))
+Action = namedtuple('Action', ('method', 'attributes', 'uri'))
 
 
 class SingleObjectMixin(object):
     model = None
 
+    def get_queryset(self):
+        return self.model.objects
+
     def get_object(self):
         if not getattr(self, 'obj', None):
-            self.obj = self.model.objects.get(pk=self.kwargs['pk'])
+            try:
+                self.obj = self.get_queryset().get(pk=self.kwargs['pk'])
+            except self.model.DoesNotExist:
+                raise Http404
 
         return self.obj
 
@@ -111,8 +117,11 @@ class CollectionResource(Resource):
             return '{}?page={}'.format(self.uri, self.page)
         return self.uri
 
-    def get_objects(self):
+    def get_queryset(self):
         return self.model.objects.all()
+
+    def get_objects(self):
+        return self.get_queryset()
 
     def get_paginator(self):
         return Paginator(self.get_objects(), self.paginate_by)
@@ -258,7 +267,7 @@ def to_siren(resource):
         action_dict = {
             'name': name,
             'method': action.method,
-            'href': resource.get_uri(),
+            'href': action.uri or resource.get_uri(),
             'type': 'application/json',
         }
 

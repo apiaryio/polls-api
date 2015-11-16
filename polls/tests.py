@@ -10,7 +10,7 @@ class ResourceTestCase(TestCase):
     def test_json_includes_allow_header(self):
         class TestAllowActionResource(Resource):
             def get_actions(self):
-                return { 'delete': Action(method='DELETE', attributes=None) }
+                return { 'delete': Action(method='DELETE', attributes=None, uri=None) }
 
         request = HttpRequest()
         request.META['HTTP_ACCEPT'] = 'application/json'
@@ -80,3 +80,25 @@ class QuestionDetailTestCase(TestCase):
 
         yes_choice.vote()
         self.assertEqual(get_choices(), [yes_choice, no_choice])
+
+    def test_reporting_question(self):
+        question = Question(question_text='Test Question')
+        question.save()
+
+        # Create two reports
+        response = self.client.post('/questions/{}/report'.format(question.pk))
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(question.is_reported)
+
+        response = self.client.post('/questions/{}/report'.format(question.pk))
+        self.assertEqual(response.status_code, 204)
+        self.assertTrue(question.is_reported)
+
+    def test_doesnt_return_reported_questions(self):
+        question = Question(question_text='Test Question')
+        question.save()
+        question.report()
+        question.report()
+
+        response = self.client.get('/questions/{}'.format(question.pk))
+        self.assertEqual(response.status_code, 404)

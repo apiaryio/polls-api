@@ -7,7 +7,8 @@ try:
 except ImportError:
     LDClient = None
 
-from polls.settings import CAN_CREATE_QUESTION, CAN_DELETE_QUESTION, CAN_VOTE_QUESTION
+from polls.settings import (CAN_CREATE_QUESTION, CAN_DELETE_QUESTION,
+                            CAN_VOTE_QUESTION, CAN_REPORT_QUESTION)
 
 if LDClient and 'LD_API_KEY' in os.environ:
     ld_client = LDClient(os.environ['LD_API_KEY'])
@@ -45,3 +46,9 @@ def can_delete_question(question, request):
 def can_vote_choice(request):
     return is_feature_enabled('choice.vote', request, CAN_VOTE_QUESTION)
 
+
+def can_report_question(question, request):
+    if question.pk in initial_question_pks:
+        return False
+
+    return is_feature_enabled('question.report', request, CAN_REPORT_QUESTION)

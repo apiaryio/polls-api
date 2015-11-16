@@ -3,9 +3,11 @@ import json
 from django.db.models import Count
 from django.http import HttpResponse
 
+from polls.settings import REPORT_THRESHOLD
 from polls.models import Question, Choice, Vote
 from polls.resource import Action, Attribute, Resource, CollectionResource, SingleObjectMixin
-from polls.features import can_create_question, can_delete_question, can_vote_choice
+from polls.features import (can_create_question, can_delete_question,
+                            can_report_question, can_vote_choice)
 
 
 class RootResource(Resource):
@@ -25,6 +27,12 @@ class QuestionResource(Resource, SingleObjectMixin):
 
     def get_uri(self):
         return '/questions/{}'.format(self.get_object().pk)
+
+    def get_queryset(self):
+        qs = super(QuestionResource, self).get_queryset()
+        qs = qs.annotate(reports_count=Count('reports'))
+        qs = qs.filter(reports_count__lt=REPORT_THRESHOLD)
+        return qs
 
     def get_attributes(self):
         question = self.get_object()
@@ -51,7 +59,11 @@ class QuestionResource(Resource, SingleObjectMixin):
         actions = {}
 
         if can_delete_question(self.get_object(), self.request):
-            actions['delete'] = Action(method='DELETE', attributes=None)
+            actions['delete'] = Action(method='DELETE', attributes=None, uri=None)
+
+        if can_report_question(self.get_object(), self.request):
+            resource = ReportQuestionResource(obj=self.get_object())
+            actions['report'] = Action(method='POST', attributes=None, uri=resource.get_uri())
 
         return actions
 
@@ -60,6 +72,21 @@ class QuestionResource(Resource, SingleObjectMixin):
             return self.http_method_not_allowed(request)
 
         self.get_object().delete()
+        return HttpResponse(status=204)
+
+
+class ReportQuestionResource(QuestionResource):
+    http_method_names = ['post']
+
+    def get_uri(self):
+        return '/questions/{}/report'.format(self.get_object().pk)
+
+    def post(self, request, *args, **kwargs):
+
+        if not can_report_question(self.get_object(), request):
+            return self.http_method_not_allowed(request)
+
+        self.get_object().report()
         return HttpResponse(status=204)
 
 
@@ -85,7 +112,7 @@ class ChoiceResource(Resource, SingleObjectMixin):
         actions = {}
 
         if can_vote_choice(self.request):
-            actions['vote'] = Action(method='POST', attributes=None)
+            actions['vote'] = Action(method='POST', attributes=None, uri=None)
 
         return actions
 
@@ -105,6 +132,12 @@ class QuestionCollectionResource(CollectionResource):
     relation = 'questions'
     uri = '/questions'
 
+    def get_queryset(self):
+        qs = super(QuestionCollectionResource, self).get_queryset()
+        qs = qs.annotate(reports_count=Count('reports'))
+        qs = qs.filter(reports_count__lt=REPORT_THRESHOLD)
+        return qs
+
     def get_actions(self):
         actions = {}
 
@@ -112,7 +145,7 @@ class QuestionCollectionResource(CollectionResource):
             actions['create'] = Action(method='POST', attributes=(
                 Attribute(name='question', category='text'),
                 Attribute(name='choices', category='array[text]'),
-            ))
+            ), uri=None)
 
         return actions
 

@@ -30,6 +30,12 @@ CAN_DELETE_QUESTION = get_env('POLLS_CAN_DELETE_QUESTION')
 # Enables the ability to vote on a question
 CAN_VOTE_QUESTION = get_env('POLLS_CAN_VOTE_QUESTION')
 
+# Enables the ability to report a question
+CAN_REPORT_QUESTION = get_env('POLLS_CAN_REPORT_QUESTION')
+
+# The amount of reports a question must have before hiding it
+REPORT_THRESHOLD = 2
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -38,7 +44,7 @@ CAN_VOTE_QUESTION = get_env('POLLS_CAN_VOTE_QUESTION')
 SECRET_KEY = 'm=%-=98*jf5hjfyjui+%5azyzr4z-$3b)q$5#1ys@6#!-#!n&e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = False
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
