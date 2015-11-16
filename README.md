@@ -8,48 +8,6 @@ view polls and vote in them. Take a look at the
 [API Documentation](http://docs.pollsapi.apiary.io/). We've
 deployed an instance of this [API](https://polls.apiblueprint.org/) for testing.
 
-## Deploying on Heroku using Docker
-
-**Requirements**:
-
-- [docker-machine](https://docs.docker.com/machine/)
-- [docker-compose](https://docs.docker.com/compose/)
-
-### Heroku Docker plugin
-
-`heroku plugins:install heroku-docker`
-
-### Running the development server in Docker
-
-`docker-compose up web`
-
-`open "http://$(docker-machine ip default):8080"`
-
-### Running tests in Docker
-
-`docker-compose run shell python manage.py test`
-
-### Release new version to Heroku
-
-`heroku docker:release`
-
-## Deploying on Heroku
-
-Click the button below to automatically set up the Polls API in an app
-running on your Heroku account.
-
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/apiaryio/polls-api)
-
-Once you've deployed, you can easily clone the application and alter the
-configuration to disable features:
-
-```bash
-$ heroku clone -a new-app-name
-$ heroku config:set POLLS_CAN_VOTE_QUESTION=false
-$ heroku config:set POLLS_CAN_CREATE_QUESTION=false
-$ heroku config:set POLLS_CAN_DELETE_QUESTION=false
-```
-
 ## Development Environment
 
 You can configure a development environment with the following:
@@ -82,6 +40,57 @@ installed, you can run the following to run dredd against the Polls API:
 
 ```bash
 $ ./scripts/dredd
+```
+
+## Deploying on Heroku
+
+Click the button below to automatically set up the Polls API in an app
+running on your Heroku account.
+
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/apiaryio/polls-api)
+
+Once you've deployed, you can easily clone the application and alter the
+configuration to disable features:
+
+```bash
+$ heroku clone -a new-app-name
+$ heroku config:set POLLS_CAN_VOTE_QUESTION=false
+$ heroku config:set POLLS_CAN_CREATE_QUESTION=false
+$ heroku config:set POLLS_CAN_DELETE_QUESTION=false
+```
+
+### Deploying on Heroku using Docker
+
+If you'd like to, you may use Docker on Heroku instead.
+
+**Requirements**:
+
+- [docker-machine](https://docs.docker.com/machine/)
+- [docker-compose](https://docs.docker.com/compose/)
+
+#### Heroku Docker plugin
+
+```
+heroku plugins:install heroku-docker`
+```
+
+#### Running the development server in Docker
+
+```
+docker-compose up web
+open "http://$(docker-machine ip default):8080"
+```
+
+#### Running tests in Docker
+
+```
+docker-compose run shell python manage.py test
+```
+
+#### Release new version to Heroku
+
+```
+heroku docker:release
 ```
 
 ## License
