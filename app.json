@@ -17,7 +17,8 @@
   "env": {
     "POLLS_CAN_CREATE_QUESTION": "true",
     "POLLS_CAN_DELETE_QUESTION": "true",
-    "POLLS_CAN_VOTE_QUESTION": "true"
+    "POLLS_CAN_VOTE_QUESTION": "true",
+    "DISABLE_COLLECTSTATIC": "1"
   },
   "image": "heroku/python"
 }
