@@ -87,6 +87,20 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+# Logging
+
+from django.utils.log import DEFAULT_LOGGING
+
+LOGGING = DEFAULT_LOGGING
+# Remove the debug only filter for console logging.
+# We want to propergate to console and papertrail
+LOGGING['handlers']['console']['filters'] = []
+
+# Ensure than request logging goes to console too
+LOGGING['loggers']['django.request']['handlers'].append('console')
+
+
 # CORS settings
 
 CORS_ORIGIN_ALLOW_ALL = True
