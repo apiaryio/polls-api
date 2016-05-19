@@ -97,9 +97,6 @@ LOGGING = DEFAULT_LOGGING
 # We want to propergate to console and papertrail
 LOGGING['handlers']['console']['filters'] = []
 
-# Ensure than request logging goes to console too
-LOGGING['loggers']['django.request']['handlers'].append('console')
-
 
 # CORS settings
 
