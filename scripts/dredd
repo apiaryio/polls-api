@@ -17,6 +17,6 @@ $DOCKER_COMPOSE run -e DATABASE_URL=sqlite:///dredd.sqlite shell "python manage.
 $DOCKER_COMPOSE up -d web
 IPWEB=`docker ps  | grep pollsapi_web | cut -d ' ' -f1 | xargs docker inspect  | grep IPAddress\": | cut -d ":" -f2 | tr -d "\"" | tr -d "," | tr -d '[[:space:]]'`
 # Run dredd
-docker run -v $(pwd):/root -w /root apiaryio/dredd /node_modules/.bin/dredd apiary.apib http://$IPWEB:8080
+docker run -v $(pwd):/root -w /root apiaryio/dredd dredd apiary.apib http://$IPWEB:8080
 RESULT=$?
 exit $RESULT
