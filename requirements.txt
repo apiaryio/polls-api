@@ -1,10 +1,8 @@
 CacheControl==0.10.2
 certifi==2015.4.28
 dj-database-url==0.4.1
-dj-static==0.0.6
 Django==1.9.6
 django-cors-headers==1.1.0
-django-toolbelt==0.0.1
 future==0.14.3
 gunicorn==19.2.1
 ldclient-py==0.16.2
