@@ -54,8 +54,10 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.cache.UpdateCacheMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
 ROOT_URLCONF = 'polls.urls'
@@ -69,6 +71,19 @@ WSGI_APPLICATION = 'polls.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(conn_max_age=500)
 }
+
+
+# Cache
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'pollsapi',
+    }
+}
+
+CACHE_MIDDLEWARE_SECONDS = 10
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/

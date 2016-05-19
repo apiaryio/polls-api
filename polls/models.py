@@ -26,5 +26,6 @@ class Choice(models.Model):
         """
         return Vote.objects.create(choice=self)
 
+
 class Vote(models.Model):
     choice = models.ForeignKey(Choice, related_name='votes')

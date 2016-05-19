@@ -4,6 +4,7 @@ from collections import namedtuple
 from django.views.generic import View
 from django.http import HttpResponse
 from django.core.paginator import Paginator
+from django.utils.cache import patch_cache_control, patch_vary_headers
 
 from negotiator import ContentType, ContentNegotiator, AcceptParameters
 
@@ -24,6 +25,7 @@ class SingleObjectMixin(object):
 
 class Resource(View):
     uri = None
+    cache_max_age = None
 
     def get_attributes(self):
         return {}
@@ -64,6 +66,9 @@ class Resource(View):
         handlers = self.content_handlers()
         handler = handlers[str(content_type)]
         response = HttpResponse(json.dumps(handler(self)), content_type)
+        patch_vary_headers(response, ['Accept'])
+        if self.cache_max_age is not None:
+            patch_cache_control(response, max_age=self.cache_max_age)
 
         if str(content_type) == 'application/json':
             # Add a Link header
