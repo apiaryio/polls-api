@@ -20,6 +20,7 @@ test:
   pre:
     - ~/bin/docker-compose/docker-compose up -d web
     - ~/bin/docker-compose/docker-compose run shell python manage.py migrate
+    - ~/bin/docker-compose/docker-compose run shell python manage.py loaddata initial_data
   override:
     - ~/bin/docker-compose/docker-compose run shell python manage.py test
   post:
