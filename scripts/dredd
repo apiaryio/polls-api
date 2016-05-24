@@ -2,8 +2,6 @@
 
 set -e
 
-export PATH="$HOME/bin/docker-compose:$PATH"
-
 docker-compose up -d web
 
 WEB_CONTAINER_ID=$(docker ps -f name=pollsapi_web -q)
