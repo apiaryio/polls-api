@@ -15,7 +15,7 @@ else:
     ld_client = None
 
 
-with open('initial_data.json') as fp:
+with open('polls/fixtures/initial_data.json') as fp:
     initial_data = json.load(fp)
 initial_questions = filter(lambda m: m['model'] == 'polls.question', initial_data)
 initial_question_pks = map(lambda m: m['pk'], initial_questions)

@@ -1,22 +1,10 @@
 #!/bin/bash
-# set -x
-which docker-compose > /dev/null 1>&1
-if [ $? -eq 0 ]; then
-  DOCKER_COMPOSE='docker-compose'
-else
-  if [ -f ~/bin/docker-compose/docker-compose ]; then
-    DOCKER_COMPOSE="$HOME/bin/docker-compose/docker-compose"
-  else
-    echo "Cannot find docker-compose!"
-    exit 1
-  fi
-fi
-# Sync the database
-$DOCKER_COMPOSE run -e DATABASE_URL=sqlite:///dredd.sqlite shell "python manage.py migrate"
-# Run the dev server
-$DOCKER_COMPOSE up -d web
-IPWEB=`docker ps  | grep pollsapi_web | cut -d ' ' -f1 | xargs docker inspect  | grep IPAddress\": | cut -d ":" -f2 | tr -d "\"" | tr -d "," | tr -d '[[:space:]]'`
-# Run dredd
-docker run -v $(pwd):/root -w /root apiaryio/dredd dredd apiary.apib http://$IPWEB:8080
-RESULT=$?
-exit $RESULT
+
+set -e
+
+docker-compose up -d web
+
+WEB_CONTAINER_ID=$(docker ps -f name=pollsapi_web -q)
+WEB_IP=$(docker inspect $WEB_CONTAINER_ID | python -c "import json, sys; print(json.load(sys.stdin)[0]['NetworkSettings']['IPAddress'])")
+
+docker run -v $(pwd):/root -w /root apiaryio/dredd dredd apiary.apib "http://$WEB_IP:8080"

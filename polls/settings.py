@@ -54,8 +54,10 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.cache.UpdateCacheMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
 ROOT_URLCONF = 'polls.urls'
@@ -66,7 +68,22 @@ WSGI_APPLICATION = 'polls.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-DATABASES = {'default': dj_database_url.config()}
+DATABASES = {
+    'default': dj_database_url.config(conn_max_age=500)
+}
+
+
+# Cache
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'pollsapi',
+    }
+}
+
+CACHE_MIDDLEWARE_SECONDS = 10
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
@@ -96,9 +113,6 @@ LOGGING = DEFAULT_LOGGING
 # Remove the debug only filter for console logging.
 # We want to propergate to console and papertrail
 LOGGING['handlers']['console']['filters'] = []
-
-# Ensure than request logging goes to console too
-LOGGING['loggers']['django.request']['handlers'].append('console')
 
 
 # CORS settings

@@ -10,6 +10,7 @@ from polls.features import can_create_question, can_delete_question, can_vote_ch
 
 class RootResource(Resource):
     uri = '/'
+    cache_max_age = 3600
 
     def get_relations(self):
         return {

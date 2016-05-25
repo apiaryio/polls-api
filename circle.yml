@@ -1,26 +1,34 @@
 machine:
+  environment:
+    PATH: "$HOME/bin/docker-compose:$PATH"
+
   pre:
     - echo 'DOCKER_OPTS="-s btrfs -e lxc -D --userland-proxy=false"' | sudo tee -a /etc/default/docker
     - sudo curl -L -o /usr/bin/docker 'https://s3-external-1.amazonaws.com/circle-downloads/docker-1.8.3-circleci'
     - sudo chmod 0755 /usr/bin/docker
+
   services:
     - docker
+
 dependencies:
   cache_directories:
     - "~/bin/docker-compose/"
+
   override:
     - docker info
     - docker version
     - if [[ ! -e ~/bin/docker-compose ]]; then mkdir ~/bin/docker-compose/ && curl -L https://github.com/docker/compose/releases/download/1.4.2/docker-compose-`uname -s`-`uname -m` > ~/bin/docker-compose/docker-compose && chmod +x ~/bin/docker-compose/docker-compose; fi
-    - ~/bin/docker-compose/docker-compose --version
-    - ~/bin/docker-compose/docker-compose pull
+    - docker-compose --version
+    - docker-compose pull
     - docker pull apiaryio/dredd
-    - ~/bin/docker-compose/docker-compose build
+    - docker-compose build
+
 test:
   pre:
-    - ~/bin/docker-compose/docker-compose up -d web
-    - ~/bin/docker-compose/docker-compose run shell python manage.py migrate
+    - docker-compose up -d web
+    - docker-compose run shell python manage.py migrate
+    - docker-compose run shell python manage.py loaddata initial_data
   override:
-    - ~/bin/docker-compose/docker-compose run shell python manage.py test
+    - docker-compose run shell python manage.py test
   post:
     - ./scripts/dredd
