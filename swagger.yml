@@ -1,0 +1,181 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title: Polls
+  description: Polls is a simple web service that allows consumers to view polls and vote in them.
+  license:
+    name: MIT
+    url: http://github.com/apiaryio/polls-api/blob/master/LICENSE
+host: polls.apiblueprint.org
+basePath: /
+schemes:
+- https
+consumes:
+- application/json
+produces:
+- application/json
+paths:
+  /:
+    x-summary: Polls API Root
+    x-description: This resource does not have any attributes. Instead it offers the initial API affordances in the form of the links in the JSON body.\nIt is recommend to follow the “url” link values or Link headers to get to resources instead of constructing your own URLs to keep your client decoupled from implementation details.
+    get:
+      description: ""
+      summary: Retrieve the Entry Point
+      parameters: []
+      responses:
+        200:
+          description: ""
+          schema:
+            type: object
+            properties:
+              questions_url:
+                type: string
+            required:
+              - questions_url
+  /questions/{question_id}:
+    x-summary: Question
+    x-description: >-
+      A Question object has the following attributes.
+
+      - question
+      - published_at
+      - url
+      - choices (an array of Choice objects).
+    parameters:
+      - name: question_id
+        in: path
+        required: true
+        type: number
+        format: int32
+        description: ID of the Question in form of an integer
+        enum:
+          - 1
+    get:
+      tags:
+        - Question
+      description: ""
+      summary: View a question detail
+      responses:
+        200:
+          description: ""
+          schema:
+            $ref: '#/definitions/Question'
+  /questions/{question_id}/choices/{choice_id}:
+    x-summary: Choice
+    parameters:
+      - name: question_id
+        in: path
+        required: true
+        type: number
+        format: int32
+        description: ID of the Question in form of an integer
+        enum:
+          - 1
+      - name: choice_id
+        in: path
+        required: true
+        type: number
+        format: int32
+        description: ID of the Choice in form of an integer
+        enum:
+          - 1
+    post:
+      tags:
+        - Question
+      description: This action allows you to vote on a question's choice.
+      summary: Vote on a Choice
+      responses:
+        201:
+          description: ""
+          schema:
+            $ref: '#/definitions/Choice'
+  /questions:
+    x-summary: Questions collection
+    x-description: Again, instead of constructing the URLs for the next page. It is **highly** recommended that you follow the `next` link header in the response.
+    parameters:
+      - name: page
+        in: query
+        required: false
+        type: number
+        format: int32
+        description: The page of questions to return
+    get:
+      tags:
+        - Question
+      description: ""
+      summary: List all questions
+      responses:
+        200:
+          description: ""
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Question'
+    post:
+      tags:
+        - Question
+      description: >-
+        You can create your own question using this action. It takes a JSON dictionary containing a question and a collection of answers in the form of choices.
+
+        - question (string) - The question
+        - choices (array[string]) - A collection of choices.
+      summary: Create a new question
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/QuestionRequest'
+      responses:
+        201:
+          description: ""
+          schema:
+            $ref: '#/definitions/Question'
+definitions:
+  Question:
+    title: Question
+    type: object
+    properties:
+      question:
+        type: string
+      published_at:
+        type: string
+      url:
+        type: string
+      choices:
+        type: array
+        items:
+          $ref: '#/definitions/Choice'
+    required:
+      - question
+      - published_at
+      - url
+      - choices
+  Choice:
+    title: Choice
+    type: object
+    properties:
+      url:
+        type: string
+      votes:
+        type: integer
+        format: int32
+      choice:
+        type: string
+    required:
+      - url
+      - votes
+      - choice
+  QuestionRequest:
+    title: Question Request
+    type: object
+    properties:
+      question:
+        type: string
+      choices:
+        type: array
+        items:
+          type: string
+    required:
+      - question
+      - choices
