@@ -19,6 +19,16 @@ class ResourceTestCase(TestCase):
         self.assertEqual(response['Allow'], 'HEAD, GET, DELETE')
 
 
+class QuestionListTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_unfound_page(self):
+        response = self.client.get('/questions?page=5')
+
+        self.assertEqual(response.status_code, 404)
+
+
 class CreateQuestionTestCase(TestCase):
     def setUp(self):
         self.client = Client()
@@ -66,6 +76,9 @@ class CreateQuestionTestCase(TestCase):
 
 
 class QuestionDetailTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+
     def test_choices_ordered_by_votes_then_alphabetical(self):
         question = Question.objects.create(question_text='Are choices ordered correctly?')
         yes_choice = Choice.objects.create(question=question, choice_text='Yes')
@@ -80,3 +93,8 @@ class QuestionDetailTestCase(TestCase):
 
         yes_choice.vote()
         self.assertEqual(get_choices(), [yes_choice, no_choice])
+
+    def test_unfound_page(self):
+        response = self.client.get('/questions/1337')
+
+        self.assertEqual(response.status_code, 404)

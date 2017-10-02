@@ -1,7 +1,8 @@
 import json
 
 from django.db.models import Count
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
+from django.core.paginator import EmptyPage
 
 from polls.models import Question, Choice, Vote
 from polls.resource import Action, Attribute, Resource, CollectionResource, SingleObjectMixin
@@ -55,6 +56,14 @@ class QuestionResource(Resource, SingleObjectMixin):
             actions['delete'] = Action(method='DELETE', attributes=None)
 
         return actions
+
+    def get(self, *args, **kwargs):
+        try:
+            self.get_object()
+        except self.model.DoesNotExist:
+            raise Http404()
+
+        return super(QuestionResource, self).get(*args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         if not can_delete_question(self.get_object(), request):
