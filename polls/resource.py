@@ -2,8 +2,8 @@ import json
 from collections import namedtuple
 
 from django.views.generic import View
-from django.http import HttpResponse
-from django.core.paginator import Paginator
+from django.http import Http404, HttpResponse
+from django.core.paginator import Paginator, EmptyPage
 from django.utils.cache import patch_cache_control, patch_vary_headers
 
 from negotiator import ContentType, ContentNegotiator, AcceptParameters
@@ -135,7 +135,12 @@ class CollectionResource(Resource):
 
     def get_relations(self):
         paginator = self.get_paginator()
-        page = paginator.page(int(self.request.GET.get('page', 1)))
+
+        try:
+            page = paginator.page(int(self.request.GET.get('page', 1)))
+        except EmptyPage:
+            raise Http404()
+
         objects = page.object_list
         relations = {
             self.relation: self.get_resources(page)
