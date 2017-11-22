@@ -130,7 +130,11 @@ class QuestionCollectionResource(CollectionResource):
         if not can_create_question(self.request):
             return self.http_method_not_allowed(request)
 
-        body = json.loads(request.body)
+        try:
+            body = json.loads(request.body)
+        except ValueError:
+            return HttpResponse(status=400)
+        
         question_text = body.get('question')
         choices = body.get('choices')
 
