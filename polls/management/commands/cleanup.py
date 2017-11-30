@@ -10,7 +10,7 @@ class Command(BaseCommand):
     help = 'Removes questions older than an hour except initial data'
 
     def handle(self, *args, **kwargs):
-        with open('initial_data.json') as fp:
+        with open('polls/fixtures/initial_data.json') as fp:
             initial_data = json.load(fp)
 
         initial_questions = filter(lambda m: m['model'] == 'polls.question', initial_data)
