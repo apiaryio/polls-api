@@ -1,3 +1,5 @@
+import json
+
 from django.test import TestCase, Client
 from django.http import HttpRequest
 
@@ -96,5 +98,36 @@ class QuestionDetailTestCase(TestCase):
 
     def test_unfound_page(self):
         response = self.client.get('/questions/1337')
+
+        self.assertEqual(response.status_code, 404)
+
+
+class ChoiceDetailTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_get_choice(self):
+        question = Question.objects.create(question_text='Testing Question?')
+        Choice.objects.create(question=question, choice_text='Best Choice')
+
+        response = self.client.get('/questions/1/choices/1')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content), {
+            'url': '/questions/1/choices/1',
+            'choice': 'Best Choice',
+            'votes': 0
+        })
+
+    def test_get_missing_choice(self):
+        question = Question.objects.create(question_text='Testing Question?')
+        Choice.objects.create(question=question, choice_text='Best Choice')
+
+        response = self.client.get('/questions/1/choices/100')
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_missing_question(self):
+        response = self.client.get('/questions/100/choices/1')
 
         self.assertEqual(response.status_code, 404)

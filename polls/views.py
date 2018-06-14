@@ -99,6 +99,14 @@ class ChoiceResource(Resource, SingleObjectMixin):
 
         return actions
 
+    def get(self, *args, **kwargs):
+        try:
+            self.get_object()
+        except self.model.DoesNotExist:
+            raise Http404()
+
+        return super(ChoiceResource, self).get(*args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         if not can_vote_choice(self.request):
             return self.http_method_not_allowed(request)
