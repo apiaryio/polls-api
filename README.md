@@ -39,7 +39,7 @@ Providing [dredd](http://dredd.readthedocs.org/en/latest/) has been
 installed, you can run the following to run dredd against the Polls API:
 
 ```bash
-$ ./scripts/dredd
+$ dredd
 ```
 
 ### Running via docker
