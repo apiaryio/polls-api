@@ -1,0 +1,47 @@
+version: 2
+
+aliases:
+  - &pollsapi-image
+    image: .
+    environment:
+      DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
+      PORT: 8080
+
+  - &database-image
+    image: circleci/postgres:9.6.2
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_DB: circle_test
+
+workflows:
+  version: 2
+
+  pollsapi:
+    jobs:
+      - test
+      - test-dredd
+
+jobs:
+  test:
+    docker:
+      - <<: *pollsapi-image
+      - <<: *database-image
+
+    steps:
+      - checkout
+      - run:
+          command: |
+            python manage.py migrate
+            python manage.py loaddata initial_data
+            python manage.py test
+
+  test-dredd:
+    docker:
+      - image: apiaryio/dredd
+      - <<: *pollsapi-image
+      - <<: *database-image
+
+    steps:
+      - checkout
+      - run:
+          command: dredd apiary.apib "http://localhost:8080"
