@@ -2,17 +2,7 @@ import os
 import json
 from hashlib import sha1
 
-try:
-    from ldclient import LDClient
-except ImportError:
-    LDClient = None
-
 from polls.settings import CAN_CREATE_QUESTION, CAN_DELETE_QUESTION, CAN_VOTE_QUESTION
-
-if LDClient and 'LD_API_KEY' in os.environ:
-    ld_client = LDClient(os.environ['LD_API_KEY'])
-else:
-    ld_client = None
 
 
 with open('polls/fixtures/initial_data.json') as fp:
@@ -22,12 +12,6 @@ initial_question_pks = map(lambda m: m['pk'], initial_questions)
 
 
 def is_feature_enabled(feature_key, request, default=False):
-    if ld_client:
-        ip_address = request.META.get('REMOTE_ADDR', 'unknown')
-        key = sha1(ip_address).hexdigest()
-        user = {'key': key}
-        return ld_client.toggle(feature_key, user, default)
-
     return default
 
 
