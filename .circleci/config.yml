@@ -13,6 +13,13 @@ aliases:
       POSTGRES_USER: root
       POSTGRES_DB: circle_test
 
+  - &bootstrap
+    run:
+      command: |
+        pipenv install
+        pipenv run python manage.py migrate
+        pipenv run python manage.py loaddata initial_data
+
 workflows:
   version: 2
 
@@ -29,14 +36,10 @@ jobs:
 
     steps:
       - checkout
+      - <<: *bootstrap
       - run:
           command: |
-            virtualenv venv
-            source venv/bin/activate
-            pip install -r requirements.txt
-            python manage.py migrate
-            python manage.py loaddata initial_data
-            python manage.py test
+            pipenv run python manage.py test
 
   test-dredd:
     docker:
@@ -48,11 +51,7 @@ jobs:
       - checkout
       - run:
           command: npm install dredd --no-optional
+      - <<: *bootstrap
       - run:
           command: |
-            virtualenv venv
-            source venv/bin/activate
-            pip install -r requirements.txt
-            python manage.py migrate
-            python manage.py loaddata initial_data
-            ./node_modules/.bin/dredd
+            pipenv run ./node_modules/.bin/dredd

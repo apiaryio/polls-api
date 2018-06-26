@@ -1,9 +1,10 @@
 FROM python:2
 
-RUN mkdir -p /usr/src/app
+RUN pip install pipenv
 WORKDIR /usr/src/app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY Pipfile* ./
+RUN pipenv install --system --deploy
+
 COPY . .
 
-CMD gunicorn --bind :$PORT polls.wsgi --log-file -
+CMD pipenv run gunicorn --bind :$PORT polls.wsgi --log-file -

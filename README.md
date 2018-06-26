@@ -12,13 +12,11 @@ deployed an instance of this [API](https://polls.apiblueprint.org/) for testing.
 
 You can configure a development environment with the following:
 
-**NOTE**: *These steps assume you have Python along with [pip](https://pip.pypa.io/en/latest/installing.html) and [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html) installed.*
+**NOTE**: *These steps assume you have Python along with [pipenv](https://docs.pipenv.org/install/) installed.*
 
 ```bash
-$ virtualenv venv
-$ source venv/bin/activate
-$ pip install -r requirements.txt
-$ python manage.py migrate
+$ pipenv install
+$ pipenv run python manage.py migrate
 ```
 
 ### Running the tests
@@ -30,7 +28,7 @@ $ python manage.py test
 ### Running the development server
 
 ```bash
-$ python manage.py runserver
+$ pipenv run python manage.py runserver
 ```
 
 ### Running dredd
@@ -39,7 +37,7 @@ Providing [dredd](http://dredd.readthedocs.org/en/latest/) has been
 installed, you can run the following to run dredd against the Polls API:
 
 ```bash
-$ dredd
+$ pipenv run dredd
 ```
 
 ### Running via docker
