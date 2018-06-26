@@ -1,0 +1,7 @@
+language: python
+server: python manage.py runserver
+server-wait: 3
+color: true
+path: []
+blueprint: apiary.apib
+endpoint: 'http://localhost:8000'

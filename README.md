@@ -39,10 +39,27 @@ Providing [dredd](http://dredd.readthedocs.org/en/latest/) has been
 installed, you can run the following to run dredd against the Polls API:
 
 ```bash
-$ ./scripts/dredd
+$ dredd
 ```
 
-## Deploying on Heroku
+### Running via docker
+
+#### Running the development server
+
+```bash
+$ docker-compose up web
+$ open "http://$(docker-machine ip default):8080"
+```
+
+#### Running tests in Docker
+
+```bash
+$ docker-compose run shell python manage.py test
+```
+
+## Deploying
+
+### Deploying on Heroku
 
 Click the button below to automatically set up the Polls API in an app
 running on your Heroku account.
@@ -61,36 +78,16 @@ $ heroku config:set POLLS_CAN_DELETE_QUESTION=false
 
 ### Deploying on Heroku using Docker
 
-If you'd like to, you may use Docker on Heroku instead.
+If you'd like to, you may use Docker on Heroku instead. Refer to the [Heroku
+Container Registry and Runtime
+Guide](https://devcenter.heroku.com/articles/container-registry-and-runtime#getting-started)
+for detailed instructions. Providing you have Docker installed you can follow
+the following steps:
 
-**Requirements**:
-
-- [docker-machine](https://docs.docker.com/machine/)
-- [docker-compose](https://docs.docker.com/compose/)
-
-#### Heroku Docker plugin
-
-```
-heroku plugins:install heroku-docker`
-```
-
-#### Running the development server in Docker
-
-```
-docker-compose up web
-open "http://$(docker-machine ip default):8080"
-```
-
-#### Running tests in Docker
-
-```
-docker-compose run shell python manage.py test
-```
-
-#### Release new version to Heroku
-
-```
-heroku docker:release
+```bash
+$ heroku container:login
+$ heroku container:push web
+$ heroku container:release web
 ```
 
 ## License

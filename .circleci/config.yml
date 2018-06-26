@@ -1,0 +1,58 @@
+version: 2
+
+aliases:
+  - &pollsapi-image
+    image: circleci/python:2.7.15
+    environment:
+      DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
+      PORT: 8000
+
+  - &database-image
+    image: circleci/postgres:9.6.2
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_DB: circle_test
+
+workflows:
+  version: 2
+
+  pollsapi:
+    jobs:
+      - test
+      - test-dredd
+
+jobs:
+  test:
+    docker:
+      - <<: *pollsapi-image
+      - <<: *database-image
+
+    steps:
+      - checkout
+      - run:
+          command: |
+            virtualenv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+            python manage.py migrate
+            python manage.py loaddata initial_data
+            python manage.py test
+
+  test-dredd:
+    docker:
+      - <<: *pollsapi-image
+        image: circleci/python:2.7.15-node-browsers
+      - <<: *database-image
+
+    steps:
+      - checkout
+      - run:
+          command: npm install dredd --no-optional
+      - run:
+          command: |
+            virtualenv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+            python manage.py migrate
+            python manage.py loaddata initial_data
+            ./node_modules/.bin/dredd
