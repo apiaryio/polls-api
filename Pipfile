@@ -13,7 +13,7 @@ gunicorn = "==19.2.1"
 negotiator = "==1.0.0"
 requests = "==2.4.0"
 "static3" = "==0.5.1"
-Django = "==1.10.5"
+Django = "==1.11.13"
 "psycopg2" = "*"
 
 [dev-packages]
