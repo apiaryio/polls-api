@@ -1,4 +1,5 @@
 import json
+import jsonschema
 
 from django.db.models import Count
 from django.http import Http404, HttpResponse
@@ -123,6 +124,23 @@ class QuestionCollectionResource(CollectionResource):
     relation = 'questions'
     uri = '/questions'
 
+    request_body_schema = {
+        'type': 'object',
+        'properties': {
+            'question': {
+                'type': 'string'
+            },
+            'choices': {
+                'type': 'array',
+                'items': {
+                    'type': 'string'
+                },
+                'minItems': 2
+            }
+        },
+        'required': ['question', 'choices']
+    }
+
     def get_actions(self):
         actions = {}
 
@@ -142,12 +160,14 @@ class QuestionCollectionResource(CollectionResource):
             body = json.loads(request.body)
         except ValueError:
             return HttpResponse(status=400)
-        
+
+        try:
+            jsonschema.validate(body, self.request_body_schema)
+        except jsonschema.ValidationError:
+            return HttpResponse(status=400)
+
         question_text = body.get('question')
         choices = body.get('choices')
-
-        if not question_text or not isinstance(choices, list):
-            return HttpResponse(status=400)
 
         question, created = self.get_or_create(question_text, choices)
         resource = self.resource()
