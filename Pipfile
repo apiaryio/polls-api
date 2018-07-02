@@ -15,6 +15,7 @@ requests = "==2.4.0"
 "static3" = "==0.5.1"
 Django = "==1.11.13"
 "psycopg2" = "*"
+jsonschema = "*"
 
 [dev-packages]
 

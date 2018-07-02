@@ -76,6 +76,26 @@ class CreateQuestionTestCase(TestCase):
         self.assertEqual(response2.status_code, 201)
         self.assertEqual(len(Question.objects.all()), original_question_count + 2)
 
+    def test_creating_question_without_body(self):
+        response = self.client.post('/questions',  content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_creating_question_with_invalid_question(self):
+        response = self.client.post('/questions', '{"question": null, "choices": ["A", "B"]}', content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_creating_question_with_invalid_choices(self):
+        response = self.client.post('/questions', '{"question": "Test Question?", "choices": ["A", "B", null]}', content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_creating_question_with_few_choices(self):
+        response = self.client.post('/questions', '{"question": "Test Question?", "choices": ["A"]}', content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+
 
 class QuestionDetailTestCase(TestCase):
     def setUp(self):
