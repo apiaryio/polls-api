@@ -112,7 +112,12 @@ class ChoiceResource(Resource, SingleObjectMixin):
         if not can_vote_choice(self.request):
             return self.http_method_not_allowed(request)
 
-        self.get_object().vote()
+        try:
+            choice = self.get_object()
+        except self.model.DoesNotExist:
+            raise Http404('Choice does not exist')
+
+        choice.vote()
         response = self.get(request)
         response.status_code = 201
         return response
