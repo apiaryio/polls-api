@@ -151,3 +151,23 @@ class ChoiceDetailTestCase(TestCase):
         response = self.client.get('/questions/100/choices/1')
 
         self.assertEqual(response.status_code, 404)
+
+    def test_vote_choice(self):
+        question = Question.objects.create(question_text='Testing Question?')
+        choice = Choice.objects.create(question=question, choice_text='Best Choice')
+
+        path = '/questions/{}/choices/{}'.format(question.pk, choice.pk)
+
+        response = self.client.post(path)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.content), {
+            'url': path,
+            'choice': 'Best Choice',
+            'votes': 1
+        })
+
+    def test_vote_unknown_choice(self):
+        response = self.client.post('/questions/1/choices/5')
+
+        self.assertEqual(response.status_code, 404)
