@@ -13,7 +13,7 @@ gunicorn = ">=19.5.0"
 negotiator = "==1.0.0"
 requests = "==2.4.0"
 "static3" = "==0.5.1"
-Django = "==1.11.13"
+Django = ">=1.11.15"
 "psycopg2" = "*"
 jsonschema = "*"
 
