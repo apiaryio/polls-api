@@ -1,7 +1,7 @@
 web:
   build: .
   command: 'gunicorn polls.wsgi --log-file -'
-  working_dir: /app/user
+  working_dir: /usr/src/app
   environment:
     PORT: 8080
     DATABASE_URL: 'postgres://postgres:@herokuPostgresql:5432/postgres'
