@@ -2,7 +2,7 @@ version: 2
 
 aliases:
   - &pollsapi-image
-    image: circleci/python:2.7.15
+    image: circleci/python:3.6
     environment:
       DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
       PORT: 8000
@@ -44,7 +44,7 @@ jobs:
   test-dredd:
     docker:
       - <<: *pollsapi-image
-        image: circleci/python:2.7.15-node-browsers
+        image: circleci/python:3.6-node-browsers
       - <<: *database-image
 
     steps:
