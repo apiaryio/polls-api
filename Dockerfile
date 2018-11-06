@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:2
 
 RUN pip install pipenv
 WORKDIR /usr/src/app
