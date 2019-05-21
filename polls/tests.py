@@ -20,6 +20,16 @@ class ResourceTestCase(TestCase):
 
         self.assertEqual(response['Allow'], 'HEAD, GET, DELETE')
 
+    def test_invalid_accept_header(self):
+        class TestResource(Resource):
+            pass
+
+        request = HttpRequest()
+        request.META['HTTP_ACCEPT'] = 'application'
+        response = TestResource().get(request)
+
+        self.assertEqual(response.status_code, 200)
+
 
 class QuestionListTestCase(TestCase):
     def setUp(self):
