@@ -14,8 +14,8 @@ negotiator = "==1.0.0"
 requests = "==2.20.0"
 "static3" = "==0.5.1"
 Django = ">=1.11.15"
-"psycopg2" = "*"
 jsonschema = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
