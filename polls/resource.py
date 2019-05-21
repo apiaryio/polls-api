@@ -96,7 +96,12 @@ class Resource(View):
 
         negotiator = ContentNegotiator(acceptable[0], acceptable)
         accept = request.META.get('HTTP_ACCEPT')
-        negotiated_type = negotiator.negotiate(accept=request.META.get('HTTP_ACCEPT'))
+
+        try:
+            negotiated_type = negotiator.negotiate(accept=request.META.get('HTTP_ACCEPT'))
+        except ValueError:
+            negotiated_type = None
+
         if negotiated_type:
             return negotiated_type.content_type
 
