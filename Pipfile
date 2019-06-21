@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-dj-database-url = "==0.4.1"
+dj-database-url = "*"
 django-cors-headers = "==1.1.0"
 gunicorn = ">=19.5.0"
 negotiator = "==1.0.0"
