@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 dj-database-url = "*"
-django-cors-headers = "==1.1.0"
+django-cors-headers = "< 2.0.0"
 gunicorn = ">=19.5.0"
 negotiator = "==1.0.0"
 Django = ">=1.11.15"
