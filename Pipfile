@@ -7,10 +7,10 @@ name = "pypi"
 dj-database-url = "*"
 django-cors-headers = "*"
 gunicorn = ">=19.5.0"
-negotiator = "==1.0.0"
 Django = ">=1.11.15"
 jsonschema = "*"
 psycopg2-binary = "*"
+python-mimeparse = "*"
 
 [dev-packages]
 

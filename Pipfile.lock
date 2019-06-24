@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "1a0cff1f2f62d6b2d890bfb751a48d4a2e99cc1e5338a14611a4983de9eccd0f"
+            "sha256": "5c239a82fbf1cbedf8f2e66fe683d378fb7216a5b424185b45b28371c8cbde7e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -71,13 +71,6 @@
             "index": "pypi",
             "version": "==3.0.1"
         },
-        "negotiator": {
-            "hashes": [
-                "sha256:139eeb1f56af27cfc8a2d6f361c84fa517d1ce3f440c477b741689d771590be3"
-            ],
-            "index": "pypi",
-            "version": "==1.0.0"
-        },
         "psycopg2-binary": {
             "hashes": [
                 "sha256:080c72714784989474f97be9ab0ddf7b2ad2984527e77f2909fcd04d4df53809",
@@ -117,6 +110,14 @@
                 "sha256:16692ee739d42cf5e39cef8d27649a8c1fdb7aa99887098f1460057c5eb75c3a"
             ],
             "version": "==0.15.2"
+        },
+        "python-mimeparse": {
+            "hashes": [
+                "sha256:76e4b03d700a641fd7761d3cd4fdbbdcd787eade1ebfac43f877016328334f78",
+                "sha256:a295f03ff20341491bfe4717a39cd0a8cc9afad619ba44b77e86b0ab8a2b8282"
+            ],
+            "index": "pypi",
+            "version": "==1.6.0"
         },
         "pytz": {
             "hashes": [
