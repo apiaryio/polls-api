@@ -75,13 +75,13 @@ class Resource(View):
             can_embed_relation = lambda relation: not self.can_embed(relation[0])
             relations = filter(can_embed_relation, self.get_relations().items())
             relation_to_link = lambda relation: '<{}>; rel="{}"'.format(relation[1].get_uri(), relation[0])
-            links = map(relation_to_link, relations)
+            links = list(map(relation_to_link, relations))
             if len(links) > 0:
                 response['Link'] = ', '.join(links)
 
         if str(content_type) != 'application/vnd.siren+json':
             # Add an Allow header
-            methods = ['HEAD', 'GET'] + map(lambda a: a.method, self.get_actions().values())
+            methods = ['HEAD', 'GET'] + list(map(lambda a: a.method, self.get_actions().values()))
             response['allow'] = ', '.join(methods)
 
         return response
@@ -134,7 +134,7 @@ class CollectionResource(Resource):
             resource.request = self.request
             return resource
 
-        return map(to_resource, objects)
+        return list(map(to_resource, objects))
 
     def get_relations(self):
         paginator = self.get_paginator()
@@ -170,7 +170,7 @@ class CollectionResource(Resource):
         def json_handler(resource):
             relations = self.get_relations()
         handlers = super(CollectionResource, self).content_handlers()
-        handlers['application/json'] = lambda resource: map(to_json, self.get_relations()[self.relation])
+        handlers['application/json'] = lambda resource: list(map(to_json, self.get_relations()[self.relation]))
         return handlers
 
     def can_embed(self, relation):
@@ -184,10 +184,10 @@ def to_json(resource):
     for relation, related_resource in resource.get_relations().items():
         if isinstance(related_resource, list):
             if resource.can_embed(relation):
-                document[relation] = map(to_json, related_resource)
+                document[relation] = list(map(to_json, related_resource))
             else:
-                document[relation] = map(lambda r: {'url': r.get_uri()},
-                                         related_resource)
+                document[relation] = list(map(lambda r: {'url': r.get_uri()},
+                                         related_resource))
         else:
             if resource.can_embed(relation):
                 document[relation] = to_json(related_resource)
@@ -209,7 +209,7 @@ def to_hal(resource):
 
         if resource.can_embed(relation) or isinstance(related_resource, list):
             if isinstance(related_resource, list):
-                embed[relation] = map(to_hal, related_resource)
+                embed[relation] = list(map(to_hal, related_resource))
             else:
                 embed[relation] = to_hal(related_resource)
         else:
@@ -250,13 +250,13 @@ def to_siren(resource):
     for relation, related_resource in resource.get_relations().items():
         if resource.can_embed(relation):
             if isinstance(related_resource, list):
-                entities += map(to_siren_relation(relation), related_resource)
+                entities += list(map(to_siren_relation(relation), related_resource))
             else:
                 entity = to_siren_relation(relation)(related_resource)
                 entities.append(entity)
         else:
             if isinstance(related_resource, list):
-                items = map(to_siren_link(relation), related_resource)
+                items = list(map(to_siren_link(relation), related_resource))
                 links += items
             else:
                 links.append(to_siren_link(relation)(related_resource))
@@ -284,7 +284,7 @@ def to_siren(resource):
                     'type': attribute.category,
                     'title': attribute.name.capitalize(),
                 }
-            action_dict['fields'] = map(to_field, action.attributes)
+            action_dict['fields'] = list(map(to_field, action.attributes))
 
         actions.append(action_dict)
 

@@ -119,7 +119,7 @@ class QuestionDetailTestCase(TestCase):
         resource.obj = question
 
         def get_choices():
-            return map(lambda r: r.obj, resource.get_relations()['choices'])
+            return list(map(lambda r: r.obj, resource.get_relations()['choices']))
 
         self.assertEqual(get_choices(), [no_choice, yes_choice])
 

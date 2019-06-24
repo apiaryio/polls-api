@@ -7,7 +7,7 @@ name = "pypi"
 dj-database-url = "*"
 django-cors-headers = "*"
 gunicorn = ">=19.5.0"
-Django = ">=1.11.15"
+Django = "==1.11.21"
 jsonschema = "*"
 psycopg2-binary = "*"
 python-mimeparse = "*"
@@ -15,4 +15,4 @@ python-mimeparse = "*"
 [dev-packages]
 
 [requires]
-python_version = "2.7"
+python_version = "3.7"
