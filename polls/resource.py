@@ -6,7 +6,7 @@ from django.http import Http404, HttpResponse
 from django.core.paginator import Paginator, EmptyPage
 from django.utils.cache import patch_cache_control, patch_vary_headers
 
-from negotiator import ContentType, ContentNegotiator, AcceptParameters
+from mimeparse import best_match, MimeTypeParseException
 
 
 Attribute = namedtuple('Attribute', ('name', 'category'))
@@ -87,26 +87,24 @@ class Resource(View):
         return response
 
     def determine_content_type(self, request):
-        acceptable = (
-            AcceptParameters(ContentType('application/json')),
-            AcceptParameters(ContentType('application/hal+json')),
-            AcceptParameters(ContentType('application/vnd.hal+json')),
-            AcceptParameters(ContentType('application/vnd.siren+json')),
-        )
+        content_types = [
+            'application/vnd.siren+json',
+            'application/vnd.hal+json',
+            'application/hal+json',
+            'application/json',
+        ]
 
-        negotiator = ContentNegotiator(acceptable[0], acceptable)
-        accept = request.META.get('HTTP_ACCEPT')
+        accept = request.META.get('HTTP_ACCEPT', '*/*')
 
         try:
-            negotiated_type = negotiator.negotiate(accept=request.META.get('HTTP_ACCEPT'))
-        except ValueError:
-            negotiated_type = None
+            content_type = best_match(content_types, accept)
+        except MimeTypeParseException:
+            content_type = None
 
-        if negotiated_type:
-            return negotiated_type.content_type
+        if not content_type:
+            return content_types[-1]
 
-        return acceptable[0].content_type
-
+        return content_type
 
 class CollectionResource(Resource):
     model = None
