@@ -47,7 +47,7 @@ class QuestionResource(Resource, SingleObjectMixin):
             return resource
 
         return {
-            'choices': map(choice_resource, list(choices)),
+            'choices': list(map(choice_resource, choices)),
         }
 
     def get_actions(self):
@@ -200,7 +200,7 @@ class QuestionCollectionResource(CollectionResource):
             question = None
 
         if question:
-            choices = map(lambda c: c.choice_text, question.choices.order_by('choice_text'))
+            choices = list(map(lambda c: c.choice_text, question.choices.order_by('choice_text')))
             if choices == sorted(choice_texts):
                 return (question, False)
 
