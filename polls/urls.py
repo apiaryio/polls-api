@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path
 from polls.views import (RootResource, QuestionCollectionResource,
                          QuestionResource, ChoiceResource)
 
@@ -8,9 +8,9 @@ def error_view(request):
 
 
 urlpatterns = [
-    url(r'^$', RootResource.as_view()),
-    url(r'^questions$', QuestionCollectionResource.as_view()),
-    url(r'^questions/(?P<pk>[\d]+)$', QuestionResource.as_view()),
-    url(r'^questions/(?P<question_pk>[\d]+)/choices/(?P<pk>[\d]+)$', ChoiceResource.as_view()),
-    url(r'^500/$', error_view),
+    path('', RootResource.as_view()),
+    path('questions', QuestionCollectionResource.as_view()),
+    path('questions/<int:pk>', QuestionResource.as_view()),
+    path('questions/<int:question_pk>/choices/<int:pk>', ChoiceResource.as_view()),
+    path('500', error_view),
 ]

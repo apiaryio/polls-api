@@ -14,7 +14,7 @@ class Question(models.Model):
 
 
 class Choice(models.Model):
-    question = models.ForeignKey(Question, related_name='choices')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='choices')
     choice_text = models.CharField(max_length=140)
 
     def __str__(self):
@@ -28,4 +28,4 @@ class Choice(models.Model):
 
 
 class Vote(models.Model):
-    choice = models.ForeignKey(Choice, related_name='votes')
+    choice = models.ForeignKey(Choice, on_delete=models.CASCADE, related_name='votes')
