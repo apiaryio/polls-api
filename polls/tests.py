@@ -181,3 +181,17 @@ class ChoiceDetailTestCase(TestCase):
         response = self.client.post('/questions/1/choices/5')
 
         self.assertEqual(response.status_code, 404)
+
+
+class HealthCheckTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_healthy(self):
+        response = self.client.get('/healthcheck')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/health+json')
+        self.assertEqual(json.loads(response.content), {
+            'status': 'ok',
+        })
