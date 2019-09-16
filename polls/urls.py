@@ -1,3 +1,6 @@
+from django.core.exceptions import ImproperlyConfigured
+from django.db import connections
+from django.db.utils import OperationalError
 from django.urls import path
 from django.http import JsonResponse
 from polls.views import (RootResource, QuestionCollectionResource,
@@ -5,7 +8,22 @@ from polls.views import (RootResource, QuestionCollectionResource,
 
 
 def healthcheck_view(request):
-    return JsonResponse({ 'status': 'ok' }, content_type='application/health+json')
+    content_type = 'application/health+json'
+    database_accessible = True
+
+    try:
+        connections['default'].cursor()
+    except ImproperlyConfigured:
+        # Database is not configured (DATABASE_URL may not be set)
+        database_accessible = False
+    except OperationalError:
+        # Database is not accessible
+        database_accessible = False
+
+    if database_accessible:
+        return JsonResponse({ 'status': 'ok' }, content_type=content_type)
+
+    return JsonResponse({ 'status': 'fail' }, status=503, content_type=content_type)
 
 
 def error_view(request):
