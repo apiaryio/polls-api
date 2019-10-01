@@ -36,7 +36,7 @@ class QuestionListTestCase(TestCase):
         self.client = Client()
 
     def test_unfound_page(self):
-        response = self.client.get('/questions?page=5')
+        response = self.client.get('/questions?page=5', secure=True)
 
         self.assertEqual(response.status_code, 404)
 
@@ -46,7 +46,12 @@ class CreateQuestionTestCase(TestCase):
         self.client = Client()
 
     def test_creating_question(self):
-        response = self.client.post('/questions', '{"question": "Test Question?", "choices": ["A", "B", "C"]}', content_type='application/json')
+        response = self.client.post(
+            '/questions',
+            '{"question": "Test Question?", "choices": ["A", "B", "C"]}',
+            content_type='application/json',
+            secure=True
+        )
 
         self.assertEqual(response.status_code, 201)
 
@@ -65,8 +70,18 @@ class CreateQuestionTestCase(TestCase):
 
         original_question_count = len(Question.objects.all())
 
-        response1 = self.client.post('/questions', '{"question": "Test Question?", "choices": ["A", "B", "C"]}', content_type='application/json')
-        response2 = self.client.post('/questions', '{"question": "Test Question?", "choices": ["A", "B", "C"]}', content_type='application/json')
+        response1 = self.client.post(
+            '/questions',
+            '{"question": "Test Question?", "choices": ["A", "B", "C"]}',
+            content_type='application/json',
+            secure=True
+        )
+        response2 = self.client.post(
+            '/questions',
+            '{"question": "Test Question?", "choices": ["A", "B", "C"]}',
+            content_type='application/json',
+            secure=True
+        )
 
         self.assertEqual(response1.status_code, 201)
         self.assertEqual(response2.status_code, 200)
@@ -79,30 +94,57 @@ class CreateQuestionTestCase(TestCase):
 
         original_question_count = len(Question.objects.all())
 
-        response1 = self.client.post('/questions', '{"question": "Test Question?", "choices": ["A", "B", "C"]}', content_type='application/json')
-        response2 = self.client.post('/questions', '{"question": "Test Question?", "choices": ["D", "E", "F"]}', content_type='application/json')
+        response1 = self.client.post('/questions',
+            '{"question": "Test Question?", "choices": ["A", "B", "C"]}',
+            content_type='application/json',
+            secure=True
+        )
+        response2 = self.client.post(
+            '/questions',
+            '{"question": "Test Question?", "choices": ["D", "E", "F"]}',
+            content_type='application/json',
+            secure=True
+        )
 
         self.assertEqual(response1.status_code, 201)
         self.assertEqual(response2.status_code, 201)
         self.assertEqual(len(Question.objects.all()), original_question_count + 2)
 
     def test_creating_question_without_body(self):
-        response = self.client.post('/questions',  content_type='application/json')
+        response = self.client.post(
+            '/questions',
+            content_type='application/json',
+            secure=True
+        )
 
         self.assertEqual(response.status_code, 400)
 
     def test_creating_question_with_invalid_question(self):
-        response = self.client.post('/questions', '{"question": null, "choices": ["A", "B"]}', content_type='application/json')
+        response = self.client.post(
+            '/questions', '{"question": null, "choices": ["A", "B"]}',
+            content_type='application/json',
+            secure=True
+        )
 
         self.assertEqual(response.status_code, 400)
 
     def test_creating_question_with_invalid_choices(self):
-        response = self.client.post('/questions', '{"question": "Test Question?", "choices": ["A", "B", null]}', content_type='application/json')
+        response = self.client.post(
+            '/questions',
+            '{"question": "Test Question?", "choices": ["A", "B", null]}',
+            content_type='application/json',
+            secure=True
+        )
 
         self.assertEqual(response.status_code, 400)
 
     def test_creating_question_with_few_choices(self):
-        response = self.client.post('/questions', '{"question": "Test Question?", "choices": ["A"]}', content_type='application/json')
+        response = self.client.post(
+            '/questions',
+            '{"question": "Test Question?", "choices": ["A"]}',
+            content_type='application/json',
+            secure=True
+        )
 
         self.assertEqual(response.status_code, 400)
 
@@ -127,7 +169,7 @@ class QuestionDetailTestCase(TestCase):
         self.assertEqual(get_choices(), [yes_choice, no_choice])
 
     def test_unfound_page(self):
-        response = self.client.get('/questions/1337')
+        response = self.client.get('/questions/1337', secure=True)
 
         self.assertEqual(response.status_code, 404)
 
@@ -140,7 +182,7 @@ class ChoiceDetailTestCase(TestCase):
         question = Question.objects.create(question_text='Testing Question?')
         Choice.objects.create(question=question, choice_text='Best Choice')
 
-        response = self.client.get('/questions/1/choices/1')
+        response = self.client.get('/questions/1/choices/1', secure=True)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content), {
@@ -153,12 +195,12 @@ class ChoiceDetailTestCase(TestCase):
         question = Question.objects.create(question_text='Testing Question?')
         Choice.objects.create(question=question, choice_text='Best Choice')
 
-        response = self.client.get('/questions/1/choices/100')
+        response = self.client.get('/questions/1/choices/100', secure=True)
 
         self.assertEqual(response.status_code, 404)
 
     def test_get_missing_question(self):
-        response = self.client.get('/questions/100/choices/1')
+        response = self.client.get('/questions/100/choices/1', secure=True)
 
         self.assertEqual(response.status_code, 404)
 
@@ -168,7 +210,7 @@ class ChoiceDetailTestCase(TestCase):
 
         path = '/questions/{}/choices/{}'.format(question.pk, choice.pk)
 
-        response = self.client.post(path)
+        response = self.client.post(path, secure=True)
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(json.loads(response.content), {
@@ -178,7 +220,7 @@ class ChoiceDetailTestCase(TestCase):
         })
 
     def test_vote_unknown_choice(self):
-        response = self.client.post('/questions/1/choices/5')
+        response = self.client.post('/questions/1/choices/5', secure=True)
 
         self.assertEqual(response.status_code, 404)
 
@@ -188,7 +230,7 @@ class HealthCheckTests(TestCase):
         self.client = Client()
 
     def test_healthy(self):
-        response = self.client.get('/healthcheck')
+        response = self.client.get('/healthcheck', secure=True)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/health+json')
