@@ -6,6 +6,7 @@ from django.http import HttpRequest
 from polls.resource import Action, Resource
 from polls.views import QuestionResource
 from polls.models import Question, Choice, Vote
+from polls.test2refract import Client, save_transactions
 
 
 class ResourceTestCase(TestCase):

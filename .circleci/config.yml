@@ -16,7 +16,7 @@ aliases:
   - &bootstrap
     run:
       command: |
-        pipenv install
+        pipenv install --dev
         pipenv run python manage.py migrate
         pipenv run python manage.py loaddata initial_data
 
