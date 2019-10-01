@@ -43,6 +43,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 ]
 
 ROOT_URLCONF = 'polls.urls'
@@ -104,13 +105,18 @@ CACHES = {
 CACHE_MIDDLEWARE_SECONDS = 10
 
 
-# Polls API Features
-
 def get_env(key, default=True):
     value = os.environ.get(key, default)
     return (value is True or value.lower() == 'true' or value == '1' or
             value.lower() == 'yes')
 
+
+# Security Middleware
+if not DEBUG:
+    SECURE_SSL_REDIRECT = get_env('SECURE_SSL_REDIRECT')
+
+
+# Polls API Features
 
 # Enables the ability to create a question
 CAN_CREATE_QUESTION = get_env('POLLS_CAN_CREATE_QUESTION')

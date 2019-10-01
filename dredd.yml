@@ -1,4 +1,4 @@
-server: python manage.py runserver
+server: env SECURE_SSL_REDIRECT=false python manage.py runserver
 server-wait: 3
 color: true
 path: []
