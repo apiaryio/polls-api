@@ -3,7 +3,7 @@ from django.utils import timezone
 import json
 
 from django.core.management.base import BaseCommand, CommandError
-from polls.models import Question
+from polls.models import Question, Vote
 
 
 class Command(BaseCommand):
@@ -19,5 +19,10 @@ class Command(BaseCommand):
         qs = Question.objects.exclude(id__in=initial_question_pks).filter(published_at__lt=one_hour_ago)
 
         print('Deleting {} questions'.format(qs.count()))
+        qs.delete()
+
+        qa = Vote.objects.all()
+
+        print('Deleting {} votes'.format(qs.count()))
         qs.delete()
 
