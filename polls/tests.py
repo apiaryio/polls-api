@@ -31,6 +31,15 @@ class ResourceTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+class RootTestCase(TestCase):
+    def test_supports_cors(self):
+        client = Client()
+        response = client.options('/', HTTP_ORIGIN='https://example.com/', secure=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Access-Control-Allow-Origin'], '*')
+
+
 class QuestionListTestCase(TestCase):
     def setUp(self):
         self.client = Client()

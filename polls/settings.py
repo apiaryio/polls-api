@@ -126,3 +126,8 @@ CAN_DELETE_QUESTION = get_env('POLLS_CAN_DELETE_QUESTION')
 
 # Enables the ability to vote on a question
 CAN_VOTE_QUESTION = get_env('POLLS_CAN_VOTE_QUESTION')
+
+
+# CORS Headers
+
+CORS_ORIGIN_ALLOW_ALL = True
