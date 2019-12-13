@@ -64,6 +64,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'polls.wsgi.application'
 
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'json': {
+            'class': 'polls.JSONLogger.Handler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['json'],
+        },
+    },
+}
+
+
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
