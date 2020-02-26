@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.cache.UpdateCacheMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -127,6 +128,8 @@ CAN_DELETE_QUESTION = get_env('POLLS_CAN_DELETE_QUESTION')
 # Enables the ability to vote on a question
 CAN_VOTE_QUESTION = get_env('POLLS_CAN_VOTE_QUESTION')
 
+
+X_FRAME_OPTIONS = 'DENY'
 
 # CORS Headers
 
