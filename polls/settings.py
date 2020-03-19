@@ -30,6 +30,8 @@ DEBUG = False
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
 
 # Application definition
 
