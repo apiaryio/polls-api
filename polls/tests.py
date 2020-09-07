@@ -49,6 +49,11 @@ class QuestionListTestCase(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
+    def test_non_numeric_page(self):
+        response = self.client.get('/questions?page=one', secure=True)
+
+        self.assertEqual(response.status_code, 404)
+
 
 class CreateQuestionTestCase(TestCase):
     def setUp(self):

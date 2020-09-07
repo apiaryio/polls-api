@@ -140,7 +140,12 @@ class CollectionResource(Resource):
         paginator = self.get_paginator()
 
         try:
-            page = paginator.page(int(self.request.GET.get('page', 1)))
+            page_number = int(self.request.GET.get('page', 1))
+        except ValueError:
+            raise Http404()
+
+        try:
+            page = paginator.page(page_number)
         except EmptyPage:
             raise Http404()
 
