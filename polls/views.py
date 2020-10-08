@@ -67,10 +67,15 @@ class QuestionResource(Resource, SingleObjectMixin):
         return super(QuestionResource, self).get(*args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
-        if not can_delete_question(self.get_object(), request):
+        try:
+            question = self.get_object()
+        except self.model.DoesNotExist:
+            raise Http404()
+
+        if not can_delete_question(question, request):
             return self.http_method_not_allowed(request)
 
-        self.get_object().delete()
+        question.delete()
         return HttpResponse(status=204)
 
 
