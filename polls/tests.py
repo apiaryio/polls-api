@@ -187,6 +187,17 @@ class QuestionDetailTestCase(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
+    def test_deleting_question(self):
+        question = Question.objects.create(question_text='Can I delete a question?')
+        response = self.client.delete('/questions/{}'.format(question.pk), secure=True)
+
+        self.assertEqual(response.status_code, 204)
+
+    def test_deleting_unknown_question(self):
+        response = self.client.delete('/questions/1234', secure=True)
+
+        self.assertEqual(response.status_code, 404)
+
 
 class ChoiceDetailTestCase(TestCase):
     def setUp(self):
