@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+
 import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -111,8 +112,12 @@ CACHE_MIDDLEWARE_SECONDS = 10
 
 def get_env(key, default=True):
     value = os.environ.get(key, default)
-    return (value is True or value.lower() == 'true' or value == '1' or
-            value.lower() == 'yes')
+    return (
+        value is True
+        or value.lower() == 'true'
+        or value == '1'
+        or value.lower() == 'yes'
+    )
 
 
 # Security Middleware

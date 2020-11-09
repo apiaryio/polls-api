@@ -1,13 +1,11 @@
 import json
 from collections import namedtuple
 
-from django.views.generic import View
+from django.core.paginator import EmptyPage, Paginator
 from django.http import Http404, HttpResponse
-from django.core.paginator import Paginator, EmptyPage
 from django.utils.cache import patch_cache_control, patch_vary_headers
-
-from mimeparse import best_match, MimeTypeParseException
-
+from django.views.generic import View
+from mimeparse import MimeTypeParseException, best_match
 
 Attribute = namedtuple('Attribute', ('name', 'category'))
 Action = namedtuple('Action', ('method', 'attributes'))
@@ -74,14 +72,18 @@ class Resource(View):
             # Add a Link header
             can_embed_relation = lambda relation: not self.can_embed(relation[0])
             relations = filter(can_embed_relation, self.get_relations().items())
-            relation_to_link = lambda relation: '<{}>; rel="{}"'.format(relation[1].get_uri(), relation[0])
+            relation_to_link = lambda relation: '<{}>; rel="{}"'.format(
+                relation[1].get_uri(), relation[0]
+            )
             links = list(map(relation_to_link, relations))
             if len(links) > 0:
                 response['Link'] = ', '.join(links)
 
         if str(content_type) != 'application/vnd.siren+json':
             # Add an Allow header
-            methods = ['HEAD', 'GET'] + list(map(lambda a: a.method, self.get_actions().values()))
+            methods = ['HEAD', 'GET'] + list(
+                map(lambda a: a.method, self.get_actions().values())
+            )
             response['allow'] = ', '.join(methods)
 
         return response
@@ -105,6 +107,7 @@ class Resource(View):
             return content_types[-1]
 
         return content_type
+
 
 class CollectionResource(Resource):
     model = None
@@ -149,10 +152,7 @@ class CollectionResource(Resource):
         except EmptyPage:
             raise Http404()
 
-        objects = page.object_list
-        relations = {
-            self.relation: self.get_resources(page)
-        }
+        relations = {self.relation: self.get_resources(page)}
 
         relations['first'] = self.__class__()
 
@@ -172,10 +172,10 @@ class CollectionResource(Resource):
         Override `content_handlers` to change JSON handler to return arrays
         """
 
-        def json_handler(resource):
-            relations = self.get_relations()
         handlers = super(CollectionResource, self).content_handlers()
-        handlers['application/json'] = lambda resource: list(map(to_json, self.get_relations()[self.relation]))
+        handlers['application/json'] = lambda resource: list(
+            map(to_json, self.get_relations()[self.relation])
+        )
         return handlers
 
     def can_embed(self, relation):
@@ -191,8 +191,9 @@ def to_json(resource):
             if resource.can_embed(relation):
                 document[relation] = list(map(to_json, related_resource))
             else:
-                document[relation] = list(map(lambda r: {'url': r.get_uri()},
-                                         related_resource))
+                document[relation] = list(
+                    map(lambda r: {'url': r.get_uri()}, related_resource)
+                )
         else:
             if resource.can_embed(relation):
                 document[relation] = to_json(related_resource)
@@ -235,6 +236,7 @@ def to_siren_relation(relation):
         document = to_siren(resource)
         document['rel'] = [relation]
         return document
+
     return inner
 
 
@@ -242,6 +244,7 @@ def to_siren(resource):
     def to_siren_link(relation):
         def inner(resource):
             return {'rel': [relation], 'href': resource.get_uri()}
+
         return inner
 
     document = {}
@@ -283,12 +286,14 @@ def to_siren(resource):
         }
 
         if action.attributes:
+
             def to_field(attribute):
                 return {
                     'name': attribute.name,
                     'type': attribute.category,
                     'title': attribute.name.capitalize(),
                 }
+
             action_dict['fields'] = list(map(to_field, action.attributes))
 
         actions.append(action_dict)
