@@ -1,9 +1,6 @@
-import os
 import json
-from hashlib import sha1
 
 from polls.settings import CAN_CREATE_QUESTION, CAN_DELETE_QUESTION, CAN_VOTE_QUESTION
-
 
 with open('polls/fixtures/initial_data.json') as fp:
     initial_data = json.load(fp)
@@ -28,4 +25,3 @@ def can_delete_question(question, request):
 
 def can_vote_choice(request):
     return is_feature_enabled('choice.vote', request, CAN_VOTE_QUESTION)
-

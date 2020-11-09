@@ -1,10 +1,15 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.db import connections
 from django.db.utils import OperationalError
-from django.urls import path
 from django.http import JsonResponse
-from polls.views import (RootResource, QuestionCollectionResource,
-                         QuestionResource, ChoiceResource)
+from django.urls import path
+
+from polls.views import (
+    ChoiceResource,
+    QuestionCollectionResource,
+    QuestionResource,
+    RootResource,
+)
 
 
 def healthcheck_view(request):
@@ -21,9 +26,9 @@ def healthcheck_view(request):
         database_accessible = False
 
     if database_accessible:
-        return JsonResponse({ 'status': 'ok' }, content_type=content_type)
+        return JsonResponse({'status': 'ok'}, content_type=content_type)
 
-    return JsonResponse({ 'status': 'fail' }, status=503, content_type=content_type)
+    return JsonResponse({'status': 'fail'}, status=503, content_type=content_type)
 
 
 def error_view(request):

@@ -1,13 +1,18 @@
 import json
-import jsonschema
 
+import jsonschema
 from django.db.models import Count
 from django.http import Http404, HttpResponse
-from django.core.paginator import EmptyPage
 
-from polls.models import Question, Choice, Vote
-from polls.resource import Action, Attribute, Resource, CollectionResource, SingleObjectMixin
 from polls.features import can_create_question, can_delete_question, can_vote_choice
+from polls.models import Choice, Question
+from polls.resource import (
+    Action,
+    Attribute,
+    CollectionResource,
+    Resource,
+    SingleObjectMixin,
+)
 
 
 class RootResource(Resource):
@@ -38,7 +43,11 @@ class QuestionResource(Resource, SingleObjectMixin):
         }
 
     def get_relations(self):
-        choices = self.get_object().choices.annotate(vote_count=Count('votes')).order_by('-vote_count', 'choice_text')
+        choices = (
+            self.get_object()
+            .choices.annotate(vote_count=Count('votes'))
+            .order_by('-vote_count', 'choice_text')
+        )
 
         def choice_resource(choice):
             resource = ChoiceResource()
@@ -137,28 +146,23 @@ class QuestionCollectionResource(CollectionResource):
     request_body_schema = {
         'type': 'object',
         'properties': {
-            'question': {
-                'type': 'string'
-            },
-            'choices': {
-                'type': 'array',
-                'items': {
-                    'type': 'string'
-                },
-                'minItems': 2
-            }
+            'question': {'type': 'string'},
+            'choices': {'type': 'array', 'items': {'type': 'string'}, 'minItems': 2},
         },
-        'required': ['question', 'choices']
+        'required': ['question', 'choices'],
     }
 
     def get_actions(self):
         actions = {}
 
         if can_create_question(self.request):
-            actions['create'] = Action(method='POST', attributes=(
-                Attribute(name='question', category='text'),
-                Attribute(name='choices', category='array[text]'),
-            ))
+            actions['create'] = Action(
+                method='POST',
+                attributes=(
+                    Attribute(name='question', category='text'),
+                    Attribute(name='choices', category='array[text]'),
+                ),
+            )
 
         return actions
 
@@ -205,7 +209,9 @@ class QuestionCollectionResource(CollectionResource):
             question = None
 
         if question:
-            choices = list(map(lambda c: c.choice_text, question.choices.order_by('choice_text')))
+            choices = list(
+                map(lambda c: c.choice_text, question.choices.order_by('choice_text'))
+            )
             if choices == sorted(choice_texts):
                 return (question, False)
 
