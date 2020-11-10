@@ -26,7 +26,7 @@ class Command(BaseCommand):
         print('Deleting {} questions'.format(qs.count()))
         qs.delete()
 
-        qa = Vote.objects.all()
+        qs = Vote.objects.all()
 
         print('Deleting {} votes'.format(qs.count()))
         qs.delete()
